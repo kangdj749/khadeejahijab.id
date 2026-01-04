@@ -1,0 +1,78 @@
+/* Tailwind v4: cukup import ini saja */
+@import "tailwindcss";
+
+/* ========== Base reset ringan ========== */
+
+/* Warna brand untuk Nusa Home Care */
+:root {
+  --color-primary: #1E9C73;
+  --color-accent: #2FB9A8;
+  --color-text-main: #1A2E35;
+  --color-bg-main: #F9FAFB;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-bg-main: #2a1a12;
+    --color-bg-accent: #3a2418;
+    --color-text-main: #f3e5d8;
+    --color-primary: #d4a373;
+  }
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Background utama */
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
+}
+
+/* Media default responsif */
+img, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Link default */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Scroll-behavior halus */
+html { scroll-behavior: smooth; }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
