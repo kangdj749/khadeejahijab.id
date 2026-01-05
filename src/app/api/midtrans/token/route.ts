@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import midtransClient from "midtrans-client";
-//import { appendSheet } from "@/lib/google-sheet";
+import { appendSheet } from "@/lib/google-sheet";
 import type { CheckoutData } from "@/lib/format-wa";
 
 export const dynamic = "force-dynamic"
@@ -66,29 +66,29 @@ export async function POST(req: Request) {
     const snapRes = await snap.createTransaction(params);
 
     /* ================= UPDATE GOOGLE SHEET ================= */
-    //await appendSheet("pending_orders", [
-    //  body.orderId,
-    //  new Date().toISOString(),
+    await appendSheet("pending_orders", [
+      body.orderId,
+      new Date().toISOString(),
 
-    //  body.customer.name,
-    //  body.customer.phone,
-    //  body.customer.address,
-    //  "-",
+      body.customer.name,
+      body.customer.phone,
+      body.customer.address,
+      "-",
 
-    //  JSON.stringify(body.items),
+      JSON.stringify(body.items),
 
-    //  body.subtotal,
-    //  body.shipping.cost,
-    //  `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
+      body.subtotal,
+      body.shipping.cost,
+      `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
 
-    //  body.total,
+      body.total,
 
-    //  body.payment_method,
-    //  "pending",
+      body.payment_method,
+      "pending",
 
-    //  body.orderId,
-    //  snapRes.token,
-    //]);
+      body.orderId,
+      snapRes.token,
+    ]);
 
     return NextResponse.json({
       token: snapRes.token,
