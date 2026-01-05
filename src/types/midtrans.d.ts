@@ -30,3 +30,9 @@ declare global {
     };
   }
 }
+
+declare module "midtrans-client" {
+  interface MidtransClientOptions {
+    clientKey?: string;
+  }
+}
