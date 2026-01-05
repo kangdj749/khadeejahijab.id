@@ -40,5 +40,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Google Cloud credentials
-*.json
+toko-online-482807-228657b25d3f.json

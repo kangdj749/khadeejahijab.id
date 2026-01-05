@@ -3,6 +3,8 @@ import midtransClient from "midtrans-client";
 import { appendSheet } from "@/lib/google-sheet";
 import type { CheckoutData } from "@/lib/format-wa";
 
+export const dynamic = "force-dynamic"
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as CheckoutData;
