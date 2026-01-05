@@ -13,6 +13,7 @@ import { buildWhatsAppMessage } from "@/lib/format-wa";
 import type { CourierService } from "@/types/shipping";
 import type { CheckoutData } from "@/lib/format-wa";
 import type { CheckoutItem } from "@/types/checkout";
+import { KabupatenOption } from "@/components/checkout/CheckoutShipping";
 
 export default function CheckoutClient() {
   /* ================= ADDRESS ================= */
@@ -20,12 +21,12 @@ export default function CheckoutClient() {
   nama: string;
   nohp: string;
   alamat: string;
-  kota: string;
+  
   }>({
     nama: "",
     nohp: "",
     alamat: "",
-    kota: "",
+    
   });
 
 
@@ -64,7 +65,7 @@ export default function CheckoutClient() {
         nama: parsed.customer.name ?? "",
         nohp: parsed.customer.phone ?? "",
         alamat: parsed.customer.address ?? "",
-        kota : parsed.customer.city
+        
       });
     }
   }, []);
@@ -75,6 +76,8 @@ export default function CheckoutClient() {
 
   const ongkir = selectedService?.cost ?? 0;
   const total = subtotal + ongkir;
+  const [selectedKab, setSelectedKab] =
+    useState<KabupatenOption | null>(null);
 
   /* ================= PAYMENT ================= */
   const [paymentMethod, setPaymentMethod] =
@@ -96,7 +99,7 @@ export default function CheckoutClient() {
         name: form.nama,
         phone: form.nohp,
         address: form.alamat,
-        city: form.kota, // ✅ INI YANG SEBELUMNYA HILANG
+        city: selectedKab?.label ?? "-" //Dari Biteship
       },
 
       items: items.map((i) => ({
@@ -179,6 +182,7 @@ export default function CheckoutClient() {
           <CheckoutShipping
             items={items}
             onSelectService={setSelectedService}
+            onSelectKabupaten={setSelectedKab}
             addressComplete={isAddressComplete}
           />
 

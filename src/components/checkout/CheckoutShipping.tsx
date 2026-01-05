@@ -28,6 +28,7 @@ type ShippingItem = {
 type Props = {
   items: ShippingItem[];
   onSelectService: (s: CourierService) => void;
+  onSelectKabupaten: (k: KabupatenOption) => void;
   addressComplete: boolean;
 };
 
@@ -36,6 +37,7 @@ type Props = {
 export default function CheckoutShipping({
   items,
   onSelectService,
+  onSelectKabupaten,
   addressComplete,
 }: Props) {
   const [search, setSearch] = useState("");
@@ -130,6 +132,7 @@ export default function CheckoutShipping({
               key={w.id}
               onClick={() => {
                 setSelectedKab(w);
+                onSelectKabupaten(w);
                 setSearch(w.label);
                 setFiltered([]);
               }}

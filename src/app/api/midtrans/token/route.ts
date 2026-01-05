@@ -59,14 +59,14 @@ export async function POST(req: Request) {
     const snapRes = await snap.createTransaction(params);
 
     /* ================= GOOGLE SHEET (NON BLOCKING) ================= */
-    appendSheet("pending_orders", [
+    await appendSheet("pending_orders", [
       body.orderId,
       new Date().toISOString(),
 
       body.customer.name,
       body.customer.phone,
       body.customer.address,
-      "-",
+      body.customer.city ?? "-", // ✅ KOTA AMAN
 
       JSON.stringify(body.items),
 
@@ -75,12 +75,14 @@ export async function POST(req: Request) {
       `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
 
       body.total,
-      body.payment_method,
+
+      "midtrans",
       "pending",
 
       body.orderId,
       snapRes.token,
-    ]).catch(console.error);
+    ]);
+
 
     /* ================= RESPONSE ================= */
     return NextResponse.json({

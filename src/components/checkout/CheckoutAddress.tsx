@@ -5,7 +5,7 @@ interface Props {
     nama: string;
     nohp: string;
     alamat: string;
-    kota : string;
+    
   };
   setForm: (v: Props["form"]) => void;
 }

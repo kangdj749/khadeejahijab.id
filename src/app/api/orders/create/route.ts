@@ -20,31 +20,31 @@ export async function POST(req: Request) {
     }
 
     /* ================= PREPARE ROW ================= */
-    await appendSheet("pending_orders", [
-      body.orderId,
-      body.created_at ?? new Date().toISOString(),
+    if (body.payment_method !== "midtrans") {
+      await appendSheet("pending_orders", [
+        body.orderId,
+        new Date().toISOString(),
 
-      body.customer.name,
-      body.customer.phone,
-      body.customer.address,
-      body.customer.city || "-", // ✅ FIX UTAMA
-      
-      JSON.stringify(body.items),
+        body.customer.name,
+        body.customer.phone,
+        body.customer.address,
+        body.customer.city ?? "-",
 
-      body.subtotal,
-      body.shipping?.cost ?? 0,
-      body.shipping
-        ? `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`
-        : "-",
+        JSON.stringify(body.items),
 
-      body.total,
+        body.subtotal,
+        body.shipping.cost,
+        `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
 
-      body.payment_method,
-      body.payment_status,
+        body.total,
 
-      body.midtrans_order_id ?? "",
-      body.snap_token ?? "",
-    ]);
+        body.payment_method,
+        "pending",
+
+        "-", // midtrans_order_id
+        "-", // snap_token
+      ]);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
