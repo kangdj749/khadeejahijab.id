@@ -3,7 +3,7 @@ import midtransClient from "midtrans-client";
 import { appendSheet } from "@/lib/google-sheet";
 import type { CheckoutData } from "@/lib/format-wa";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -17,17 +17,11 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("ENV CHECK:", {
-      isProd: process.env.MIDTRANS_IS_PRODUCTION,
-      serverKey: process.env.MIDTRANS_SERVER_KEY?.slice(0, 10),
-      clientKey: process.env.MIDTRANS_CLIENT_KEY?.slice(0, 10),
-    });
-
     /* ================= MIDTRANS INIT ================= */
     const snap = new midtransClient.Snap({
       isProduction: process.env.MIDTRANS_IS_PRODUCTION === "true",
       serverKey: process.env.MIDTRANS_SERVER_KEY!,
-      clientKey: "DUMMY", //hanya untuk satisfy TS
+      clientKey: process.env.MIDTRANS_CLIENT_KEY!, // ✅ WAJIB REAL
     });
 
     /* ================= ITEMS ================= */
@@ -35,10 +29,9 @@ export async function POST(req: Request) {
       id: String(item.id),
       name: item.name,
       price: item.price,
-      quantity: item.qty, // ✅ Midtrans wajib "quantity"
+      quantity: item.qty,
     }));
 
-    // Ongkir sebagai item
     item_details.push({
       id: "ONGKIR",
       name: `Ongkir (${body.shipping.courier.toUpperCase()} - ${body.shipping.service})`,
@@ -65,8 +58,8 @@ export async function POST(req: Request) {
     /* ================= CREATE TOKEN ================= */
     const snapRes = await snap.createTransaction(params);
 
-    /* ================= UPDATE GOOGLE SHEET ================= */
-    await appendSheet("pending_orders", [
+    /* ================= GOOGLE SHEET (NON BLOCKING) ================= */
+    appendSheet("pending_orders", [
       body.orderId,
       new Date().toISOString(),
 
@@ -82,32 +75,24 @@ export async function POST(req: Request) {
       `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
 
       body.total,
-
       body.payment_method,
       "pending",
 
       body.orderId,
       snapRes.token,
-    ]);
+    ]).catch(console.error);
 
+    /* ================= RESPONSE ================= */
     return NextResponse.json({
       token: snapRes.token,
       midtrans_order_id: body.orderId,
     });
-    } catch (err: unknown) {
-    console.error("MIDTRANS TOKEN ERROR", err);
-
-    if (err instanceof Error) {
-      return NextResponse.json(
-        { error: err.message },
-        { status: 500 }
-      );
-    }
+  } catch (err) {
+    console.error("❌ MIDTRANS TOKEN ERROR:", err);
 
     return NextResponse.json(
       { error: "Midtrans token error" },
       { status: 500 }
     );
-}
-
+  }
 }
