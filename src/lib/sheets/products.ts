@@ -9,7 +9,7 @@ const TAB_PRODUCTS = "products";
 const TAB_VARIATIONS = "product_variations";
 
 /* ===============================
-   SHEET ROW TYPES (ANTI any)
+   SHEET ROW TYPES
 ================================ */
 type SheetProductRow = {
   id?: string;
@@ -34,13 +34,14 @@ type SheetVariationRow = {
   discountPrice?: string | number;
   stock?: string | number;
   image?: string;
-  [key: string]: unknown; // variation1Name, variation1Value, dst
+  weight?: string | number;
+  [key: string]: unknown;
 };
 
 /* ===============================
    HELPERS
 ================================ */
-const capitalize = (str: string): string =>
+const capitalize = (str: string) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 
 const slugify = (value: string) =>
@@ -58,157 +59,114 @@ function cartesianProduct(arrays: string[][]): string[][] {
 }
 
 /* ================================
-   GET PRODUCTS (PAGINATION READY)
+   GET ALL PRODUCTS (NO PAGINATION)
 ================================ */
-export async function getProducts(
-  page = 1,
-  limit = 8
-): Promise<Product[]> {
+export async function getProducts(): Promise<Product[]> {
   try {
     const [resProducts, resVariations] = await Promise.all([
       fetch(`https://opensheet.elk.sh/${SHEET_ID}/${TAB_PRODUCTS}`, {
-        next: { revalidate: 3600 }, // cache 1 jam,
+        cache: "no-store",
       }),
       fetch(`https://opensheet.elk.sh/${SHEET_ID}/${TAB_VARIATIONS}`, {
-        next: { revalidate: 3600 }, // cache 1 jam,
+        cache: "no-store",
       }),
     ]);
 
-    if (!resProducts.ok) {
-      console.error("❌ Produk sheet gagal di-fetch");
-      return [];
-    }
+    if (!resProducts.ok) return [];
 
-    const dataProducts: SheetProductRow[] =
-      await resProducts.json();
-
-    const dataVariations: SheetVariationRow[] =
+    const productsSheet: SheetProductRow[] = await resProducts.json();
+    const variationsSheet: SheetVariationRow[] =
       resVariations.ok ? await resVariations.json() : [];
 
-    if (!Array.isArray(dataProducts)) return [];
+    if (!Array.isArray(productsSheet)) return [];
 
     /* =============================
-       VARIATION PROCESSING
+       VARIANTS
     ============================== */
     const variantsByProduct: Record<string, ProductVariant[]> = {};
-    const uiOptionsByProduct: Record<
-      string,
-      Record<string, Set<string>>
-    > = {};
+    const uiOptions: Record<string, Record<string, Set<string>>> = {};
 
-    dataVariations.forEach((row) => {
-      const productId = row?.productId?.toString().trim();
+    variationsSheet.forEach((row) => {
+      const productId = row.productId?.toString().trim();
       if (!productId) return;
 
       const names: string[] = [];
-      const optionArrays: string[][] = [];
+      const values: string[][] = [];
 
       for (let i = 1; i <= 5; i++) {
         const n = row[`variation${i}Name`];
         const v = row[`variation${i}Value`];
 
         if (typeof n === "string" && typeof v === "string") {
-          const opts = v
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
+          const opts = v.split(",").map((s) => s.trim()).filter(Boolean);
+          if (!opts.length) continue;
 
-          if (opts.length) {
-            names.push(n);
-            optionArrays.push(opts);
+          names.push(n);
+          values.push(opts);
 
-            uiOptionsByProduct[productId] ??= {};
-            uiOptionsByProduct[productId][n] ??= new Set();
-            opts.forEach((o) =>
-              uiOptionsByProduct[productId][n].add(o)
-            );
-          }
+          uiOptions[productId] ??= {};
+          uiOptions[productId][n] ??= new Set();
+          opts.forEach((o) => uiOptions[productId][n].add(o));
         }
       }
 
-      const price = Number(row.price) || 0;
-      const discountPrice = row.discountPrice
-        ? Number(row.discountPrice)
-        : undefined;
-      const stock = Number(row.stock) || 0;
-      const image =
-        typeof row.image === "string" && row.image.startsWith("http")
-          ? row.image
-          : undefined;
-
-      const combos = names.length
-        ? cartesianProduct(optionArrays)
-        : [[]];
+      const combos = names.length ? cartesianProduct(values) : [[]];
 
       combos.forEach((combo, idx) => {
         const optionMap: Record<string, string> = {};
-        names.forEach(
-          (n, i) => (optionMap[capitalize(n)] = combo[i])
-        );
+        names.forEach((n, i) => (optionMap[capitalize(n)] = combo[i]));
 
         variantsByProduct[productId] ??= [];
         variantsByProduct[productId].push({
           id: `${productId}-${idx}`,
           optionMap,
-          price,
-          discountPrice,
-          stock,
-          image,
-          weight: Number(row.weight) || undefined,
+          price: Number(row.price) || 0,
+          discountPrice: row.discountPrice
+            ? Number(row.discountPrice)
+            : undefined,
+          stock: Number(row.stock) || 0,
+          image:
+            typeof row.image === "string" && row.image.startsWith("http")
+              ? row.image
+              : undefined,
+          weight: Number(row.weight) || 0,
         });
       });
     });
 
-    /* =============================
-       BUILD UI VARIATIONS
-    ============================== */
     const uiVariations: Record<string, ProductVariation[]> = {};
-    Object.entries(uiOptionsByProduct).forEach(([pid, groups]) => {
-      uiVariations[pid] = Object.entries(groups).map(
-        ([name, set]) => ({
-          name: capitalize(name),
-          options: Array.from(set),
-        })
-      );
+    Object.entries(uiOptions).forEach(([pid, groups]) => {
+      uiVariations[pid] = Object.entries(groups).map(([name, set]) => ({
+        name: capitalize(name),
+        options: Array.from(set),
+      }));
     });
 
     /* =============================
-       PAGINATION
+       FINAL MAP
     ============================== */
-    const start = (page - 1) * limit;
-    const sliced = dataProducts.slice(start, start + limit);
-
-    /* =============================
-       FINAL MAP (SLUG FIXED)
-    ============================== */
-    return sliced.map((item, idx) => {
-      const id =
-        item?.id?.toString().trim() || `product-${start + idx}`;
+    return productsSheet.map((item, idx) => {
+      const id = item.id?.toString().trim() || `product-${idx}`;
 
       const gallery =
         typeof item.gallery === "string"
-          ? item.gallery
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
+          ? item.gallery.split(",").map((s) => s.trim()).filter(Boolean)
           : [];
 
-      const variantImgs: string[] =
-      variantsByProduct[id]
-        ?.map((v) => v.image)
-        .filter((img): img is string => typeof img === "string") || [];
+      const variantImgs =
+        variantsByProduct[id]
+          ?.map((v) => v.image)
+          .filter((i): i is string => typeof i === "string") || [];
 
-      const mergedGallery: string[] = Array.from(
+      const mergedGallery = Array.from(
         new Set([...gallery, ...variantImgs])
       );
 
       return {
         id,
-        name: item?.name?.toString() || "Produk",
-        slug:
-          item.slug?.toString().trim() ||
-          (item.name ? slugify(item.name) : id),
-        description: item?.description?.toString() || "",
+        name: item.name || "Produk",
+        slug: item.slug || (item.name ? slugify(item.name) : id),
+        description: item.description || "",
         image:
           typeof item.image === "string" && item.image.startsWith("http")
             ? item.image
@@ -218,7 +176,7 @@ export async function getProducts(
         discountPrice: item.discountPrice
           ? Number(item.discountPrice)
           : undefined,
-        category: item?.category?.toString() || "",
+        category: item.category || "",
         tags:
           typeof item.tags === "string"
             ? item.tags.split(",").map((t) => t.trim())
@@ -234,46 +192,33 @@ export async function getProducts(
       };
     });
   } catch (err) {
-    console.error("❌ Error getProducts:", err);
+    console.error("❌ getProducts error:", err);
     return [];
   }
 }
 
 /* ===============================
-   GET PRODUCT BY SLUG
+   HELPERS
 ================================ */
-export async function getProductBySlug(
-  slug: string
-): Promise<Product | null> {
-  const products = await getProducts(1, 9999);
-  return products.find((p) => p.slug === slug) ?? null;
+export async function getProductBySlug(slug: string) {
+  const all = await getProducts();
+  return all.find((p) => p.slug === slug) || null;
 }
 
-/* ===============================
-   GET PRODUCT BY ID (LEGACY)
-================================ */
 export async function getProductById(id: string) {
-  const all = await getProducts(1, 9999);
+  const all = await getProducts();
   return all.find((p) => p.id === id) || null;
 }
 
-/* ===============================
-   RELATED PRODUCTS
-================================ */
 export async function getRelatedProducts(
   category: string,
   excludeId?: string,
   limit = 4
 ) {
-  if (!category) return [];
-
-  const all = await getProducts(1, 9999);
-
+  const all = await getProducts();
   return all
     .filter(
-      (p) =>
-        p.category === category &&
-        (!excludeId || p.id !== excludeId)
+      (p) => p.category === category && (!excludeId || p.id !== excludeId)
     )
     .slice(0, limit);
 }

@@ -1,48 +1,60 @@
-import { NextResponse } from "next/server";
-import { getProducts } from "@/lib/sheets/products";
-import { Product } from "@/types";
+import { NextResponse } from "next/server"
+import crypto from "crypto"
+import { getProducts } from "@/lib/sheets/products"
+import { Product } from "@/types"
 
-export const runtime = "nodejs";
+//export const runtime = "nodejs"
 
-const SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL!;
+const SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL!
+
+export const dynamic = "force-dynamic";
 
 /* =====================
-   GET: LIST PRODUK
+   GET: LIST PRODUK (PAGINATION)
 ===================== */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = parseInt(searchParams.get("limit") || "8", 10);
 
-    const products: Product[] = await getProducts();
+    const page = Number(searchParams.get("page") || 1);
+    const limit = Number(searchParams.get("limit") || 8);
+    const category = searchParams.get("category");
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+    let products: Product[] = await getProducts();
 
-    return NextResponse.json(products.slice(startIndex, endIndex));
+    // ✅ OPTIONAL FILTER CATEGORY
+    if (category) {
+      products = products.filter(
+        (p) =>
+          (p.category || "").trim().toLowerCase() ===
+          category.trim().toLowerCase()
+      );
+    }
+
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    return NextResponse.json(products.slice(start, end));
   } catch (err) {
-    console.error("API GET /products:", err);
-    return NextResponse.json(
-      { error: "Failed to fetch products" },
-      { status: 500 }
-    );
+    console.error("❌ API /products error:", err);
+    return NextResponse.json([], { status: 200 }); // 🔥 jangan bikin frontend crash
   }
 }
-
 /* =====================
-   POST: SIMPAN PRODUK
+   POST: SIMPAN PRODUK (KEEP)
 ===================== */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json()
 
     const payload = {
       id: crypto.randomUUID(),
       name: String(body.name),
       description: String(body.description || ""),
       image: String(body.image || ""),
-      gallery: Array.isArray(body.gallery)? body.gallery.filter(Boolean): [],
+      gallery: Array.isArray(body.gallery)
+        ? body.gallery.filter(Boolean)
+        : [],
       category: String(body.category || ""),
       tags: Array.isArray(body.tags) ? body.tags : [],
       price: Number(body.price),
@@ -51,39 +63,36 @@ export async function POST(req: Request) {
       tokopedia: body.tokopedia || "",
       tiktok: body.tiktok || "",
       weight: Number(body.weight || 0),
-      variations: Array.isArray(body.variations) ? body.variations : [],
-    };
+      variations: Array.isArray(body.variations)
+        ? body.variations
+        : [],
+    }
 
     const res = await fetch(SCRIPT_URL, {
       method: "POST",
-      redirect: "follow", // 🔥 WAJIB
-      headers: {
-        "Content-Type": "application/json",
-      },
+      redirect: "follow",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    });
+    })
 
-    const text = await res.text();
+    const text = await res.text()
 
-    // 🔥 DETEKSI HTML GOOGLE
     if (text.startsWith("<!DOCTYPE html")) {
-      throw new Error(
-        "GOOGLE APPS SCRIPT REDIRECT (permission / deployment salah)"
-      );
+      throw new Error("GOOGLE APPS SCRIPT REDIRECT")
     }
 
-    const json = JSON.parse(text);
+    const json = JSON.parse(text)
 
     if (!json.success) {
-      throw new Error("Apps Script gagal simpan");
+      throw new Error("Apps Script gagal simpan")
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true })
   } catch (err) {
-    console.error("API POST /products:", err);
+    console.error("API POST /products:", err)
     return NextResponse.json(
       { error: "Submit produk gagal" },
       { status: 500 }
-    );
+    )
   }
 }

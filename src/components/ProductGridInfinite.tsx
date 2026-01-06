@@ -1,105 +1,64 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState, useCallback } from "react"
-import ProductCard from "@/components/ProductCard"
-import ProductSkeleton from "@/components/ProductSkeleton"
-import { Product } from "@/types"
+import { useState } from "react";
+import { Product } from "@/types";
+import ProductCard from "./ProductCard";
 
-interface Props {
-  initialProducts: Product[]
-}
+type Props = { initialProducts?: Product[]; category?: string };
 
-export default function ProductGridInfinite({ initialProducts }: Props) {
-  const [products, setProducts] = useState<Product[]>(initialProducts ?? [])
-  const [page, setPage] = useState(initialProducts?.length ? 1 : 0)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
+export default function ProductGridInfinite({ initialProducts, category }: Props) {
+  const [products, setProducts] = useState<Product[]>(Array.isArray(initialProducts) ? initialProducts : []);
+  const [page, setPage] = useState(2);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const loaderRef = useRef<HTMLDivElement | null>(null)
+  const limit = 8;
 
-  /* ===========================
-     LOAD MORE (STABLE)
-  ============================ */
-  const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return
-
-    setLoading(true)
-
+  const loadMore = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
     try {
-      const nextPage = page + 1
-      const res = await fetch(`/api/products?page=${nextPage}&limit=8`)
-      const data: Product[] = await res.json()
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (category) params.set("category", category);
 
-      if (!data.length) {
-        setHasMore(false)
-        return
-      }
+      const res = await fetch(`/api/products?${params}`);
+      const data = await res.json();
 
-      setProducts((prev) => [...prev, ...data])
-      setPage(nextPage)
+      if (Array.isArray(data) && data.length > 0) {
+        setProducts((prev) => [...prev, ...data]);
+        setPage((p) => p + 1);
+        if (data.length < limit) setHasMore(false);
+      } else setHasMore(false);
     } catch (err) {
-      console.error("❌ loadMore error:", err)
+      console.error("❌ load more error:", err);
+      setHasMore(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [page, loading, hasMore])
+  };
 
-  /* ===========================
-     AUTO LOAD FIRST PAGE
-  ============================ */
-  useEffect(() => {
-    if (!initialProducts || initialProducts.length === 0) {
-      loadMore()
-    }
-  }, [initialProducts, loadMore])
-
-  /* ===========================
-     INTERSECTION OBSERVER
-  ============================ */
-  useEffect(() => {
-    if (!loaderRef.current) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore()
-        }
-      },
-      { rootMargin: "200px" }
-    )
-
-    observer.observe(loaderRef.current)
-    return () => observer.disconnect()
-  }, [loadMore])
-
-  /* ===========================
-     EMPTY STATE
-  ============================ */
-  if (!loading && products.length === 0) {
-    return (
-      <p className="text-center text-gray-500 py-10">
-        Produk belum tersedia.
-      </p>
-    )
+  if (!products || products.length === 0) {
+    return <p className="text-center text-gray-500">Produk belum tersedia</p>;
   }
 
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-        {products.map((p) => (
-          <ProductCard key={p.id} product={p} />
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
-
-      {loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <ProductSkeleton key={i} />
-          ))}
+      {hasMore && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="px-6 py-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 disabled:opacity-50"
+          >
+            {loading ? "Memuat..." : "Muat Produk Lainnya"}
+          </button>
         </div>
       )}
-
-      {hasMore && <div ref={loaderRef} className="h-10" />}
     </>
-  )
+  );
 }

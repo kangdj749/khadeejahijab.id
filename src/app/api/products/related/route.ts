@@ -1,49 +1,36 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 import { getProducts } from "@/lib/sheets/products";
 import { Product } from "@/types";
 
-// 🔹 Endpoint: /api/products/related?category=Fashion&exclude=P001
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
-    const excludeId = searchParams.get("exclude");
+    const exclude = searchParams.get("exclude");
 
     if (!category) {
-      return NextResponse.json(
-        { error: "Parameter 'category' diperlukan" },
-        { status: 400 }
-      );
+      return NextResponse.json([]);
     }
 
     const products: Product[] = await getProducts();
 
-    // Normalisasi kategori dan filter produk terkait
     const related = products.filter((p) => {
-      const cat = (p.category || "").trim().toLowerCase();
-      return (
-        cat === category.trim().toLowerCase() &&
-        (!excludeId || p.id !== excludeId)
-      );
+      if (!p.category) return false;
+
+      const sameCategory =
+        p.category.trim().toLowerCase() ===
+        category.trim().toLowerCase();
+
+      const notSelf = exclude ? String(p.id) !== exclude : true;
+
+      return sameCategory && notSelf;
     });
 
-    // Kalau hasilnya kosong, tampilkan produk random sebagai fallback
-    const result =
-      related.length > 0
-        ? related.sort(() => Math.random() - 0.5).slice(0, 4)
-        : products
-            .filter((p) => p.id !== excludeId)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 4);
-
-    return NextResponse.json(result);
+    return NextResponse.json(related.slice(0, 8));
   } catch (err) {
-    console.error("❌ API Error /products/related:", err);
-    return NextResponse.json(
-      { error: "Gagal memuat produk terkait" },
-      { status: 500 }
-    );
+    console.error("❌ related products error:", err);
+    return NextResponse.json([]);
   }
 }

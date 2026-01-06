@@ -1,7 +1,4 @@
-export function cloudinaryImage(
-  url?: string,
-  width = 800
-): string {
+export function cloudinaryImage(url?: string, width = 800): string {
   if (!url) return "/placeholder.png";
   if (!url.includes("cloudinary.com")) return url;
 
@@ -10,7 +7,6 @@ export function cloudinaryImage(
     `/upload/f_auto,q_auto,w_${width},c_limit/`
   );
 }
-
 
 type UploadResult = {
   secure_url: string;
@@ -21,10 +17,7 @@ export async function uploadToCloudinary(
   file: File,
   folder = "products/gallery"
 ): Promise<UploadResult> {
-  const sigRes = await fetch(
-    "/api/cloudinary/signature",
-    { method: "POST" }
-  );
+  const sigRes = await fetch("/api/cloudinary/signature", { method: "POST" });
   const sig = await sigRes.json();
 
   const formData = new FormData();
@@ -36,15 +29,10 @@ export async function uploadToCloudinary(
 
   const uploadRes = await fetch(
     `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    }
+    { method: "POST", body: formData }
   );
 
-  if (!uploadRes.ok) {
-    throw new Error("Upload Cloudinary gagal");
-  }
+  if (!uploadRes.ok) throw new Error("Upload Cloudinary gagal");
 
   return uploadRes.json();
 }
