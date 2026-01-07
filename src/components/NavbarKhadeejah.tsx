@@ -24,7 +24,7 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            {["Beranda", "Keunggulan", "Produk", "Tentang", "Kontak"].map((link) => (
+            {["Beranda", "Produk", "Tentang", "Kontak"].map((link) => (
               <a key={link} href={`#${link.toLowerCase()}`} className="relative text-gray-700 hover:text-pink-700 font-medium transition group">
                 {link}
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-pink-600 transition-all duration-300 group-hover:w-full" />

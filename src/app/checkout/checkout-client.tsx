@@ -2,8 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { cloudinaryImage } from "@/lib/cloudinary";
+//import Image from "next/image";
+//import { cloudinaryImage } from "@/lib/cloudinary";
 import CheckoutHeader from "@/components/checkout/CheckoutHeader";
 import CheckoutAddress from "@/components/checkout/CheckoutAddress";
 import CheckoutShipping from "@/components/checkout/CheckoutShipping";
@@ -150,39 +150,6 @@ export default function CheckoutClient() {
           />
           <CheckoutPayment value={paymentMethod} onChange={setPaymentMethod} />
 
-          {/* Item List */}
-          <div className="bg-white rounded-3xl shadow-md overflow-hidden divide-y divide-pink-100">
-            {items.map((i) => (
-              <div key={i.id} className="flex items-center gap-4 p-4">
-                <div className="relative w-20 aspect-square rounded-xl overflow-hidden bg-pink-50">
-                  <Image
-                    src={cloudinaryImage(i.image, 400)}
-                    alt={i.name}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{i.name}</p>
-                  {i.variations && (
-                    <p className="text-sm text-gray-500 truncate">
-                      {Object.entries(i.variations)
-                        .map(([k, v]) => `${k}: ${v}`)
-                        .join(", ")}
-                    </p>
-                  )}
-                  <p className="text-pink-700 font-semibold mt-1">
-                    Rp {i.price.toLocaleString("id-ID")}
-                  </p>
-                  <p className="text-xs text-gray-400">Berat: {i.weight} gr</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Qty: {i.qty}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
 
           <CheckoutSummary items={items} subtotal={subtotal} ongkir={ongkir} total={total} />
         </div>

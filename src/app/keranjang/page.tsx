@@ -29,8 +29,19 @@ export default function CartPage() {
     item.product.discountPrice ??
     item.product.price;
 
-  const getVariantWeight = (item: CartItem) =>
-    findVariant(item.product, item.selectedVariations)?.weight ?? item.product.weight ?? 0;
+  const getVariantWeight = (item: CartItem) => {
+    const variant = findVariant(item.product, item.selectedVariations);
+
+    if (variant && typeof variant.weight === "number" && variant.weight > 0) {
+      return variant.weight;
+    }
+
+    if (typeof item.product.weight === "number" && item.product.weight > 0) {
+      return item.product.weight;
+    }
+
+    return 0;
+  };
 
   const getVariantImage = (item: CartItem) =>
     findVariant(item.product, item.selectedVariations)?.image ?? item.product.image ?? "/placeholder.png";
