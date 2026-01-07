@@ -1,46 +1,35 @@
 import { MetadataRoute } from "next";
-import { getProducts } from "@/lib/sheets/products";
 import { CATEGORY_MAP } from "@/lib/category";
-import { Product } from "@/types";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://khadeejahijab.id";
-
-  /* ================= CATEGORIES ================= */
-  const categories: MetadataRoute.Sitemap = Object.values(CATEGORY_MAP).map(
-    (c) => ({
-      url: `${baseUrl}/category/${c.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    })
-  );
-
-  /* ================= PRODUCTS ================= */
-  const products: Product[] = await getProducts();
-
-  const productUrls: MetadataRoute.Sitemap = products.map((p) => ({
-    url: `${baseUrl}/products/${p.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  const now = new Date();
 
   /* ================= STATIC ================= */
-  return [
+  const staticUrls: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 1,
     },
     {
       url: `${baseUrl}/products`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
     },
-    ...categories,
-    ...productUrls,
   ];
+
+  /* ================= CATEGORIES ================= */
+  const categoryUrls: MetadataRoute.Sitemap = Object.values(
+    CATEGORY_MAP
+  ).map((c) => ({
+    url: `${baseUrl}/category/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
+  return [...staticUrls, ...categoryUrls];
 }
