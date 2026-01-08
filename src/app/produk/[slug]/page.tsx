@@ -40,6 +40,7 @@
         siteName: "Khadeeja Hijab",
         images: product.image ? [product.image] : [],
       },
+      
     };
   }
 

@@ -29,7 +29,7 @@ export default function CategoryTabsClient({
         <button
           key={cat}
           onClick={() =>
-            router.push(`/category/${slugify(cat)}`)
+            router.push(`/search?category=${slugify(cat)}`)
           }
           className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
             active === cat

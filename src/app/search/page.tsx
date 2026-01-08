@@ -12,45 +12,56 @@ type Props = {
 };
 
 export default async function SearchPage({ searchParams }: Props) {
-  const keyword = (searchParams.q || "").toLowerCase();
-  const activeCategory = searchParams.category || "all";
+  /** RAW QUERY */
+  const rawKeyword = searchParams.q || "";
+  const rawCategory = searchParams.category || "all";
+
+  /** NORMALIZED */
+  const keyword = rawKeyword.trim().toLowerCase();
+  const activeCategory = rawCategory.trim().toLowerCase();
 
   const products: Product[] = await getProducts();
 
-  /** FILTER SERVER */
+  /** FILTER */
   const filtered = products.filter((p) => {
+    const name = p.name?.toLowerCase() || "";
+    const category = p.category?.toLowerCase() || "";
+    const tags = Array.isArray(p.tags)
+      ? p.tags.map((t) => t.toLowerCase())
+      : [];
+
     const matchKeyword =
       !keyword ||
-      p.name.toLowerCase().includes(keyword) ||
-      p.tags?.some((t) => t.toLowerCase().includes(keyword));
+      name.includes(keyword) ||
+      tags.some((t) => t.includes(keyword));
 
     const matchCategory =
-      activeCategory === "all" || p.category === activeCategory;
+      activeCategory === "all" || category === activeCategory;
 
     return matchKeyword && matchCategory;
   });
 
-  /** KATEGORI UNIK */
   const categories = Array.from(
     new Set(products.map((p) => p.category).filter(Boolean))
   ) as string[];
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    // 🔥 INI KUNCI NYA
+    <main
+      key={`${rawKeyword}-${rawCategory}`}
+      className="max-w-6xl mx-auto px-4 py-10 space-y-8"
+    >
       <h1 className="text-2xl font-bold">
-        Hasil pencarian {keyword && `“${keyword}”`}
+        Hasil pencarian {rawKeyword && `“${rawKeyword}”`}
       </h1>
 
-      {/* SEARCH INPUT */}
-      <SearchBarClient defaultValue={keyword} />
+      <SearchBarClient defaultValue={rawKeyword} />
 
-      {/* CATEGORY */}
       <CategoryTabsClient
         categories={categories}
-        active={activeCategory}
+        active={rawCategory}
       />
 
-      {/* RESULT */}
       {filtered.length === 0 ? (
         <p className="text-center text-gray-500 py-20">
           Produk tidak ditemukan
