@@ -5,7 +5,7 @@ import AOS from "aos";
 
 import NavbarKhadeejah from "@/components/NavbarKhadeejah";
 import HeroPremium from "@/components/HeroPremium";
-import ProductGridInfinite from "@/components/ProductGridInfinite";
+import HomeProductSection from "@/components/HomeProductSection";
 import TestimoniKhadeejah from "@/components/TestimoniKhadeejah";
 import TentangKamiKhadeejah from "@/components/TentangKamiKhadeejah";
 import FooterKhadeejah from "@/components/FooterKhadeejah";
@@ -14,33 +14,34 @@ import HybridWhatsAppCTA from "@/components/HybridWhatsAppCTA";
 import { Product } from "@/types";
 
 export default function LandingPage() {
-  const [initialProducts, setInitialProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, easing: "ease-in-out" });
 
-    const fetchInitialProducts = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/products?page=1&limit=8", {
+        const res = await fetch("/api/products", {
           cache: "no-store",
         });
+
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          setInitialProducts(data);
+          setProducts(data);
         } else {
-          setInitialProducts([]);
+          setProducts([]);
         }
       } catch (err) {
         console.error("❌ fetch products error:", err);
-        setInitialProducts([]);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInitialProducts();
+    fetchProducts();
   }, []);
 
   return (
@@ -63,7 +64,7 @@ export default function LandingPage() {
           🛍️ Produk Kami
         </h2>
 
-        {/* LOADING SKELETON */}
+        {/* LOADING */}
         {loading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -81,13 +82,13 @@ export default function LandingPage() {
           </div>
         )}
 
-        {/* GRID (HANYA JIKA DATA ADA) */}
-        {!loading && initialProducts.length > 0 && (
-          <ProductGridInfinite initialProducts={initialProducts} />
+        {/* GRID BARU (SEARCH + KATEGORI) */}
+        {!loading && products.length > 0 && (
+          <HomeProductSection products={products} />
         )}
 
-        {/* EMPTY STATE */}
-        {!loading && initialProducts.length === 0 && (
+        {/* EMPTY */}
+        {!loading && products.length === 0 && (
           <p className="text-center text-gray-500">
             Produk belum tersedia
           </p>
@@ -100,7 +101,11 @@ export default function LandingPage() {
       </section>
 
       {/* Tentang Kami */}
-      <section id="tentang" className="py-12 px-4 sm:px-6 lg:px-10" data-aos="fade-up">
+      <section
+        id="tentang"
+        className="py-12 px-4 sm:px-6 lg:px-10"
+        data-aos="fade-up"
+      >
         <TentangKamiKhadeejah />
       </section>
 
