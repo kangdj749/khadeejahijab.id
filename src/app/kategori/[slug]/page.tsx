@@ -31,6 +31,7 @@ export async function generateMetadata(
       description: `Koleksi ${categoryName} pilihan terbaik`,
       type: "website",
     },
+    
   };
 }
 
