@@ -6,6 +6,7 @@ import NavbarKhadeejah from "@/components/NavbarKhadeejah";
 import FooterKhadeejah from "@/components/FooterKhadeejah";
 import { GlobalToaster } from "@/components/GlobalToaster";
 import { CartProvider } from "./context/CartContext";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 export const metadata: Metadata = {
   title: {
@@ -31,6 +32,7 @@ export default function RootLayout({
           {/* PAGE CONTENT */}
           <main className="min-h-screen pt-16 sm:pt-20">
             {children}
+            <MobileBottomNav/>
           </main>
 
           {/* OPTIONAL GLOBAL FOOTER */}

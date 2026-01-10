@@ -1,57 +1,78 @@
-/* Tailwind v4: cukup import ini saja */
+/* Tailwind v4 */
 @import "tailwindcss";
 
-/* ========== Base reset ringan ========== */
-
-/* Warna brand untuk Nusa Home Care */
+/* =========================
+   CSS VARIABLES (THEME CORE)
+========================= */
 :root {
-  --color-primary: #1E9C73;
-  --color-accent: #2FB9A8;
-  --color-text-main: #1A2E35;
-  --color-bg-main: #F9FAFB;
+  /* BRAND COLOR (RGB ONLY) */
+  --color-primary: 236 72 153;        /* pink */
+  --color-primary-soft: 252 231 243;
+  --color-text: 17 24 39;
+  --color-bg: 255 255 255;
+
+  /* FONT */
+  --font-heading: "Poppins";
+  --font-body: "Inter";
 }
 
+/* =========================
+   DARK MODE (SAFE)
+========================= */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --color-bg-main: #2a1a12;
-    --color-bg-accent: #3a2418;
-    --color-text-main: #f3e5d8;
-    --color-primary: #d4a373;
+
+    --color-bg: 17 24 39;        /* gray-900 */
+    --color-text: 243 244 246;   /* gray-100 */
+
+    --color-primary: 236 72 153; /* tetap RGB */
+    --color-primary-soft: 190 24 93;
   }
 }
 
-html, body {
+/* =========================
+   BASE RESET
+========================= */
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* Background utama */
-  background: var(--color-bg-main);
-  color: var(--color-text-main);
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
+  font-family: var(--font-body), system-ui, sans-serif;
 }
 
-/* Media default responsif */
-img, video, canvas, svg {
+/* Media */
+img,
+video,
+canvas,
+svg {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-/* Link default */
+/* Link */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Scroll-behavior halus */
-html { scroll-behavior: smooth; }
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
 
+/* =========================
+   EFFECTS & UTILITIES
+========================= */
+
+/* Skeleton loader */
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
@@ -71,8 +92,22 @@ html { scroll-behavior: smooth; }
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.35),
     transparent
   );
   animation: shimmer 1.2s infinite;
+}
+
+/* Slide up (mobile sheet / cart) */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out;
 }

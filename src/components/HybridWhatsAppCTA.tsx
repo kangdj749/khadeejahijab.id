@@ -6,7 +6,7 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function HybridWhatsAppCTA() {
-  const whatsappNumber = "6281322817712"; // nomor WhatsApp toko
+  const whatsappNumber = "6281224128899"; // nomor WhatsApp toko
   const [waLink, setWaLink] = useState("");
 
   useEffect(() => {

@@ -49,6 +49,7 @@ export default function TentangKamiKhadeejah() {
           </p>
         </motion.div>
       </div>
+      
     </section>
   );
 }

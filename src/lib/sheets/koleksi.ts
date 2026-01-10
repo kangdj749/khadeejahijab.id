@@ -3,10 +3,14 @@
 /* ===============================
    TYPES
 ================================ */
-export type Koleksi = {
+
+
+export type KoleksiSEO = {
   slug: string;
   h1: string;
-  intro: string;
+  intro?: string;
+  excerpt?: string;
+  image?: string;
   faq_json?: string;
   product_category: string;
 };
@@ -20,7 +24,7 @@ const TAB_KOLEKSI = "koleksi"; // pastikan nama tab BENAR
 /* ===============================
    GET ALL KOLEKSI
 ================================ */
-export async function getAllKoleksi(): Promise<Koleksi[]> {
+export async function getAllKoleksi(): Promise<KoleksiSEO[]> {
   try {
     const res = await fetch(
       `https://opensheet.elk.sh/${SHEET_ID}/${TAB_KOLEKSI}`,
@@ -39,6 +43,8 @@ export async function getAllKoleksi(): Promise<Koleksi[]> {
         slug: r.slug.trim(),
         h1: r.h1.trim(),
         intro: r.intro || "",
+        excerpt: r.excerpt || "",
+        image: r.image || "",
         faq_json: r.faq_json || undefined,
         product_category: r.product_category || "",
       }));
@@ -53,7 +59,7 @@ export async function getAllKoleksi(): Promise<Koleksi[]> {
 ================================ */
 export async function getKoleksiBySlug(
   slug: string
-): Promise<Koleksi | null> {
+): Promise<KoleksiSEO | null> {
   const all = await getAllKoleksi();
   return all.find((k) => k.slug === slug) || null;
 }

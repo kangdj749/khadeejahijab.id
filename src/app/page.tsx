@@ -16,7 +16,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <main className="bg-white text-gray-800">
+    <main className="bg text-gray-800">
       {/* Hero */}
       <section id="beranda" className="pt-16 sm:pt-20">
         <HeroPremium />
