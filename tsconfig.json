@@ -27,10 +27,7 @@
       "@/*": ["./src/*"]
     },
 
-    /* =========================
-       SILENCE FUTURE WARNINGS
-    ========================= */
-    "ignoreDeprecations": "6.0"
+    
   },
 
   "include": [
