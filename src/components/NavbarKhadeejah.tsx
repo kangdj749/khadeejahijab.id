@@ -25,9 +25,9 @@ export default function NavbarKhadeejah() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
+    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border">
       {/* ================= TOP BAR ================= */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-pink-200/40 shadow-soft">
+      <div className="bg-background/90 backdrop-blur-xl border-b border-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           
           {/* LOGO */}
@@ -40,13 +40,13 @@ export default function NavbarKhadeejah() {
                 className="object-contain"
               />
             </div>
-            <span className="font-heading font-bold text-[rgb(var(--color-primary))] text-lg tracking-tight">
+            <span className="font-heading font-bold text-primary text-lg tracking-tight">
               Khadeejah Hijab
             </span>
           </Link>
 
           {/* DESKTOP MENU */}
-          <nav className="hidden md:flex gap-8 text-sm font-medium">
+          <nav className="hidden md:flex gap-8 text-sm font-medium text-foreground">
             {["Beranda", "Produk", "Koleksi", "Blog"].map((item) => (
               <Link
                 key={item}
@@ -63,19 +63,23 @@ export default function NavbarKhadeejah() {
             {/* SEARCH DESKTOP */}
             <form
               onSubmit={handleSearch}
-              className="hidden md:flex items-center gap-2
-              bg-white/70 backdrop-blur
-              border border-pink-100
-              rounded-full px-4 py-1.5
-              shadow-sm
-              focus-within:border-primary"
+              className="
+                hidden md:flex items-center gap-2
+                bg-card border border-border
+                rounded-full px-4 py-1.5
+                focus-within:border-primary
+                transition
+              "
             >
               <Search size={16} className="text-primary" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari produk…"
-                className="bg-transparent text-sm outline-none w-36 placeholder:text-gray-400"
+                className="
+                  bg-transparent text-sm outline-none w-36
+                  placeholder:text-muted
+                "
               />
             </form>
 
@@ -88,14 +92,13 @@ export default function NavbarKhadeejah() {
               {getTotalQty() > 0 && (
                 <span
                   className="
-                  absolute -top-2 -right-2
-                  bg-[rgb(var(--color-primary))]
-                  text-white
-                  text-[11px] font-bold
-                  w-5 h-5 rounded-full
-                  flex items-center justify-center
-                  shadow-lg
-                  ring-2 ring-white"
+                    absolute -top-2 -right-2
+                    bg-primary text-primary-foreground
+                    text-[11px] font-semibold
+                    w-5 h-5 rounded-full
+                    flex items-center justify-center
+                    ring-2 ring-background
+                  "
                 >
                   {getTotalQty()}
                 </span>
@@ -120,22 +123,23 @@ export default function NavbarKhadeejah() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="md:hidden bg-white/90 backdrop-blur-xl border-b border-pink-100/40"
+            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border"
           >
             <div className="p-5 space-y-5">
               <form
                 onSubmit={handleSearch}
-                className="flex items-center gap-2
-                bg-white
-                border border-pink-100
-                rounded-xl px-3 py-2"
+                className="
+                  flex items-center gap-2
+                  bg-card border border-border
+                  rounded-xl px-3 py-2
+                "
               >
                 <Search size={16} className="text-primary" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Cari produk…"
-                  className="flex-1 bg-transparent outline-none text-sm"
+                  className="flex-1 bg-transparent outline-none text-sm placeholder:text-muted"
                 />
               </form>
 
@@ -144,7 +148,7 @@ export default function NavbarKhadeejah() {
                   key={item}
                   href={item === "Beranda" ? "/" : `/${item.toLowerCase()}`}
                   onClick={() => setIsOpen(false)}
-                  className="block font-medium hover:text-primary"
+                  className="block font-medium text-foreground hover:text-primary transition"
                 >
                   {item}
                 </Link>
@@ -161,13 +165,15 @@ export default function NavbarKhadeejah() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed right-4 top-20 w-80
-            bg-white/90 backdrop-blur-xl
-            border border-pink-100/40
-            rounded-2xl shadow-xl z-50"
+            className="
+              fixed right-4 top-20 w-80
+              bg-card/95 backdrop-blur-xl
+              border border-border
+              rounded-2xl shadow-xl z-50
+            "
           >
             {items.length === 0 ? (
-              <div className="p-6 text-center text-sm text-gray-500">
+              <div className="p-6 text-center text-sm text-muted">
                 Keranjang masih kosong
               </div>
             ) : (
@@ -182,10 +188,10 @@ export default function NavbarKhadeejah() {
                       className="rounded-lg object-cover"
                     />
                     <div className="flex-1">
-                      <p className="font-medium line-clamp-1">
+                      <p className="font-medium line-clamp-1 text-foreground">
                         {item.product.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted">
                         {item.qty} × Rp{" "}
                         {(item.product.discountPrice ??
                           item.product.price
@@ -195,8 +201,8 @@ export default function NavbarKhadeejah() {
                   </div>
                 ))}
 
-                <div className="border-t pt-3 text-right">
-                  <p className="text-sm">
+                <div className="border-t border-border pt-3 text-right">
+                  <p className="text-sm text-foreground">
                     Total:{" "}
                     <span className="font-semibold text-primary">
                       Rp {getTotal().toLocaleString("id-ID")}
@@ -205,11 +211,13 @@ export default function NavbarKhadeejah() {
                   <Link
                     href="/keranjang"
                     onClick={() => setShowCart(false)}
-                    className="block mt-3
-                    bg-primary text-white
-                    py-2.5 rounded-xl
-                    text-center text-sm font-medium
-                    hover:opacity-90"
+                    className="
+                      block mt-3
+                      bg-primary text-primary-foreground
+                      py-2.5 rounded-xl
+                      text-center text-sm font-medium
+                      hover:bg-primary/90 transition
+                    "
                   >
                     Lihat Keranjang
                   </Link>

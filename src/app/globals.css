@@ -1,50 +1,67 @@
 @import "tailwindcss";
 
-/* =========================
-   DESIGN TOKENS (GLOBAL)
-========================= */
+/* ======================================================
+   DESIGN TOKENS (SOURCE OF TRUTH)
+   → hanya RGB number (tanpa rgb())
+====================================================== */
 :root {
-  /* SURFACE */
+  /* ================= SURFACE ================= */
   --background: 255 255 255;
-  --foreground: 17 24 39;
+  --foreground: 17 24 39;       /* gray-900 */
 
   --card: 255 255 255;
-  --border: 226 232 240;
-  --muted: 241 245 249;
+  --border: 226 232 240;        /* slate-200 */
+  --muted: 241 245 249;         /* slate-100 */
 
-  /* BRAND */
-  --primary: 236 72 153;
+  /* ================= BRAND ================= */
+  --primary: 236 72 153;        /* pink-500 */
   --primary-foreground: 255 255 255;
-  --primary-soft: 252 231 243;
+  --primary-soft: 252 231 243;  /* pink-100 */
 
-  /* FONT */
+  /* ================= TYPO ================= */
   --font-heading: "Poppins";
   --font-body: "Inter";
 }
 
-/* =========================
-   DARK MODE (SAFE)
-========================= */
+/* ======================================================
+   DARK MODE (AUTO, AMAN KONTRAS)
+====================================================== */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --background: 17 24 39;
-    --foreground: 243 244 246;
+    --background: 17 24 39;     /* slate-900 */
+    --foreground: 243 244 246;  /* slate-100 */
 
-    --card: 30 41 59;
-    --border: 51 65 85;
+    --card: 30 41 59;           /* slate-800 */
+    --border: 51 65 85;         /* slate-700 */
     --muted: 30 41 59;
 
-    --primary: 236 72 153;
+    --primary: 236 72 153;      /* brand tetap */
     --primary-foreground: 255 255 255;
-    --primary-soft: 190 24 93;
+    --primary-soft: 190 24 93;  /* pink-700 */
   }
 }
 
-/* =========================
-   BASE
-========================= */
+/* ======================================================
+   TAILWIND v4 THEME BRIDGE  ⭐ INI KUNCI UTAMA ⭐
+====================================================== */
+@theme {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+
+  --color-card: rgb(var(--card));
+  --color-border: rgb(var(--border));
+  --color-muted: rgb(var(--muted));
+
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-primary-soft: rgb(var(--primary-soft));
+}
+
+/* ======================================================
+   BASE RESET
+====================================================== */
 html,
 body {
   height: 100%;
@@ -62,10 +79,12 @@ a {
 }
 
 img,
-video {
+video,
+canvas,
+svg {
+  display: block;
   max-width: 100%;
   height: auto;
-  display: block;
 }
 
 html {

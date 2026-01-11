@@ -34,15 +34,11 @@ export default function ProductDetailClient({ product }: Props) {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  /* ================= VARIANT TERPILIH ================= */
+  /* ================= VARIANT ================= */
   const selectedVariant = useMemo<ProductVariant | null>(() => {
     if (!product.variants?.length) return null;
     if (!product.variations?.length) return null;
-
-    // 🔒 VARIASI BELUM LENGKAP → JANGAN MATCH VARIANT
-    if (Object.keys(variations).length < product.variations.length) {
-      return null;
-    }
+    if (Object.keys(variations).length < product.variations.length) return null;
 
     return (
       product.variants.find((v) =>
@@ -76,23 +72,11 @@ export default function ProductDetailClient({ product }: Props) {
     ? selectedVariant.discountPrice ?? selectedVariant.price
     : product.discountPrice ?? product.price;
 
-  /* ================= WEIGHT (ANTI 0, ANTI UNDEFINED) ================= */
+  /* ================= WEIGHT ================= */
   const activeWeight = useMemo<number>(() => {
-    if (
-      selectedVariant &&
-      typeof selectedVariant.weight === "number" &&
-      selectedVariant.weight > 0
-    ) {
+    if (selectedVariant?.weight && selectedVariant.weight > 0)
       return selectedVariant.weight;
-    }
-
-    if (
-      typeof product.weight === "number" &&
-      product.weight > 0
-    ) {
-      return product.weight;
-    }
-
+    if (product.weight && product.weight > 0) return product.weight;
     return 0;
   }, [selectedVariant, product.weight]);
 
@@ -101,9 +85,8 @@ export default function ProductDetailClient({ product }: Props) {
     addItem(
       {
         ...product,
-        // ❗ JANGAN SAMPAI product.weight JADI 0
         weight:
-          selectedVariant && selectedVariant.weight && selectedVariant.weight > 0
+          selectedVariant?.weight && selectedVariant.weight > 0
             ? selectedVariant.weight
             : product.weight ?? 0,
       },
@@ -118,7 +101,6 @@ export default function ProductDetailClient({ product }: Props) {
   /* ================= RELATED ================= */
   useEffect(() => {
     if (!product.category) return;
-
     fetch(
       `/api/products/related?category=${product.category}&exclude=${product.id}`
     )
@@ -127,7 +109,6 @@ export default function ProductDetailClient({ product }: Props) {
       .catch(console.error);
   }, [product]);
 
-  /* ================= IMAGE NAV ================= */
   const prevImage = () =>
     setActiveIndex((p) => (p > 0 ? p - 1 : allImages.length - 1));
   const nextImage = () =>
@@ -139,12 +120,20 @@ export default function ProductDetailClient({ product }: Props) {
 
   /* ================= RENDER ================= */
   return (
-    <section className="py-8 px-4 bg-[#fffafc] min-h-screen space-y-12 pb-24 sm:pb-0">
-      <div className="max-w-md mx-auto bg-white rounded-3xl shadow-md overflow-hidden border border-pink-100">
+    <section className="bg-background min-h-screen py-8 px-4 space-y-14 pb-28 sm:pb-0">
+      {/* ================= CARD ================= */}
+      <div className="max-w-md mx-auto bg-card rounded-3xl shadow-card border border-border overflow-hidden">
+        {/* BACK */}
         <div className="px-4 pt-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full bg-pink-50 border border-pink-200 text-pink-600"
+            className="
+              inline-flex items-center gap-2
+              text-sm px-4 py-2 rounded-full
+              bg-primary-soft
+              border border-border
+              text-primary
+            "
           >
             <ArrowLeft className="w-4 h-4" />
             Kembali Belanja
@@ -168,20 +157,20 @@ export default function ProductDetailClient({ product }: Props) {
             alt={product.name}
             fill
             priority
-            sizes="(max-width: 768px) 100vw, 420px"
             className="object-cover"
           />
+
           {allImages.length > 1 && (
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full"
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-card/80 p-2 rounded-full"
               >
                 <ChevronLeft />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-card/80 p-2 rounded-full"
               >
                 <ChevronRight />
               </button>
@@ -190,22 +179,24 @@ export default function ProductDetailClient({ product }: Props) {
         </div>
 
         {/* THUMB */}
-        <div className="flex gap-3 overflow-x-auto px-4 py-3 bg-pink-50/40">
+        <div className="flex gap-3 overflow-x-auto px-4 py-3 bg-muted/40">
           {allImages.map((img, i) => (
             <button
               key={img}
               onClick={() => setActiveIndex(i)}
-              className={`relative w-20 aspect-square rounded-xl overflow-hidden border-2 ${
-                activeIndex === i
-                  ? "border-pink-500"
-                  : "border-gray-200"
-              }`}
+              className={`
+                relative w-20 aspect-square rounded-xl overflow-hidden border-2
+                ${
+                  activeIndex === i
+                    ? "border-primary"
+                    : "border-border"
+                }
+              `}
             >
               <Image
                 src={cloudinaryImage(img, 300)}
                 alt=""
                 fill
-                sizes="80px"
                 className="object-cover"
               />
             </button>
@@ -213,21 +204,23 @@ export default function ProductDetailClient({ product }: Props) {
         </div>
 
         {/* CONTENT */}
-        <div className="p-6 space-y-5">
-          <h1 className="text-2xl font-bold">{product.name}</h1>
+        <div className="p-6 space-y-6">
+          <h1 className="text-2xl font-bold text-foreground">
+            {product.name}
+          </h1>
 
-          <p className="text-pink-500 font-semibold text-lg">
+          <p className="text-primary font-semibold text-lg">
             Rp {activePrice.toLocaleString("id-ID")}
           </p>
 
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted">
             Berat: {activeWeight} gr
           </p>
 
           {/* VARIATIONS */}
           {product.variations?.map((v) => (
             <div key={v.name}>
-              <p className="font-medium mb-1">{v.name}</p>
+              <p className="font-medium mb-2">{v.name}</p>
               <div className="flex flex-wrap gap-2">
                 {v.options.map((opt) => (
                   <button
@@ -235,11 +228,14 @@ export default function ProductDetailClient({ product }: Props) {
                     onClick={() =>
                       setVariations((p) => ({ ...p, [v.name]: opt }))
                     }
-                    className={`px-3 py-1 rounded-full border text-sm ${
-                      variations[v.name] === opt
-                        ? "bg-pink-500 text-white border-pink-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`
+                      px-3 py-1 rounded-full border text-sm
+                      ${
+                        variations[v.name] === opt
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "border-border"
+                      }
+                    `}
                   >
                     {opt}
                   </button>
@@ -250,7 +246,7 @@ export default function ProductDetailClient({ product }: Props) {
 
           {/* DESC */}
           <div>
-            <h2 className="font-semibold text-pink-500 mb-2">
+            <h2 className="font-semibold text-primary mb-2">
               Deskripsi Produk
             </h2>
             <div
@@ -261,7 +257,7 @@ export default function ProductDetailClient({ product }: Props) {
             />
             <button
               onClick={() => setShowFullDesc((p) => !p)}
-              className="text-pink-500 text-sm mt-2"
+              className="text-primary text-sm mt-2"
             >
               {showFullDesc ? "Sembunyikan" : "Lihat Selengkapnya"}
             </button>
@@ -269,12 +265,16 @@ export default function ProductDetailClient({ product }: Props) {
 
           <button
             onClick={handleAddToCart}
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-xl flex items-center justify-center gap-2"
+            className="
+              w-full bg-primary text-primary-foreground
+              py-3 rounded-xl
+              flex items-center justify-center gap-2
+              hover:bg-primary/90 transition
+            "
           >
             <ShoppingCart /> Masuk Keranjang
           </button>
-
-          {/* MARKETPLACE */}
+           {/* MARKETPLACE */}
           <div className="flex gap-2">
             {product.marketplace?.shopee && (
               <a
@@ -304,6 +304,7 @@ export default function ProductDetailClient({ product }: Props) {
               </a>
             )}
           </div>
+
         </div>
       </div>
 
@@ -311,7 +312,7 @@ export default function ProductDetailClient({ product }: Props) {
       <div className="max-w-6xl mx-auto px-2">
         <h2 className="font-semibold mb-4">Produk Terkait</h2>
         {related.length === 0 ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             Belum ada produk terkait
           </p>
         ) : (
@@ -323,7 +324,6 @@ export default function ProductDetailClient({ product }: Props) {
         )}
       </div>
 
-      {/* STICKY */}
       <StickyAddToCart
         price={activePrice}
         onAdd={handleAddToCart}

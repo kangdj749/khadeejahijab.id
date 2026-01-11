@@ -12,68 +12,99 @@ type Props = { product: Product };
 
 export default function ProductCard({ product }: Props) {
   const { addItem } = useCart();
-  const imageUrl = product.image ? cloudinaryImage(product.image, 600) : "/placeholder.png";
+  const imageUrl = product.image
+    ? cloudinaryImage(product.image, 600)
+    : "/placeholder.png";
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    try {
-      addItem(product, 1, {});
-      toast.success("Ditambahkan ke keranjang 🛍️");
-    } catch (err) {
-      console.error(err);
-      toast.error("Gagal menambahkan ke keranjang 😢");
-    }
+    addItem(product, 1, {});
+    toast.success("Ditambahkan ke keranjang 🛍️");
   };
 
   return (
-    <article className="relative bg-white rounded-2xl border border-pink-100 shadow-sm hover:shadow-md transition overflow-hidden group">
-      <Link href={`/produk/${product.slug}`} prefetch={true} className="block focus:outline-none focus:ring-2 focus:ring-rose-400 rounded-2xl">
+    <article
+      className="
+        group relative
+        bg-card border border-border
+        rounded-2xl overflow-hidden
+        shadow-card hover:shadow-soft
+        transition
+      "
+    >
+      <Link href={`/produk/${product.slug}`} className="block">
+        {/* CATEGORY BADGE */}
         {product.category && (
-          <span className="absolute top-3 left-3 z-10 bg-rose-500 text-white text-xs font-semibold px-2 py-1 rounded-md shadow">
+          <span
+            className="
+              absolute top-3 left-3 z-10
+              bg-primary/90 text-primary-foreground
+              text-[11px] font-semibold
+              px-2 py-1 rounded-md
+              shadow
+            "
+          >
             {product.category}
           </span>
         )}
-        <div className="relative aspect-square w-full bg-gray-100">
+
+        {/* IMAGE */}
+        <div className="relative aspect-square bg-muted">
           <Image
             src={imageUrl}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            placeholder="blur"
-            blurDataURL="/placeholder.png"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="
+              object-cover
+              transition-transform duration-500
+              group-hover:scale-105
+            "
           />
         </div>
-        <div className="px-3 py-3 space-y-1">
-          <h2 className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2">{product.name}</h2>
+
+        {/* CONTENT */}
+        <div className="p-3 space-y-1">
+          <h3 className="text-sm sm:text-base font-semibold text-primary line-clamp-2">
+            {product.name}
+          </h3>
+
           <div className="flex items-center gap-2">
             {product.discountPrice ? (
               <>
-                <p className="text-rose-500 font-bold text-sm sm:text-base">
-                  Rp {Number(product.discountPrice).toLocaleString("id-ID")}
+                <p className="text-primary font-bold text-sm sm:text-base">
+                  Rp{" "}
+                  {Number(product.discountPrice).toLocaleString("id-ID")}
                 </p>
-                <p className="text-gray-400 text-xs line-through">
+                <p className="text-xs text-foreground/50 line-through">
                   Rp {product.price.toLocaleString("id-ID")}
                 </p>
               </>
             ) : (
-              <p className="text-rose-500 font-bold text-sm sm:text-base">
+              <p className="text-primary font-bold text-sm sm:text-base">
                 Rp {product.price.toLocaleString("id-ID")}
               </p>
             )}
           </div>
         </div>
       </Link>
-      <div className="absolute bottom-3 right-3 z-20">
-        <button
-          onClick={handleAddToCart}
-          aria-label={`Tambah ${product.name} ke keranjang`}
-          className="bg-rose-500 hover:bg-rose-600 p-2.5 rounded-full shadow-md text-white transition-transform hover:scale-105"
-        >
-          <ShoppingCart className="h-5 w-5" />
-        </button>
-      </div>
+
+      {/* ADD TO CART */}
+      <button
+        onClick={handleAddToCart}
+        aria-label={`Tambah ${product.name} ke keranjang`}
+        className="
+          absolute bottom-3 right-3 z-20
+          bg-primary text-primary-foreground
+          p-2.5 rounded-full
+          shadow-lg
+          hover:bg-primary/90
+          transition
+        "
+      >
+        <ShoppingCart className="h-5 w-5" />
+      </button>
     </article>
   );
 }

@@ -18,8 +18,8 @@ export default function HeroPremium() {
   }, []);
 
   return (
-    <section className="relative h-[88vh] min-h-[600px] w-full overflow-hidden">
-      {/* BACKGROUND SLIDER */}
+    <section className="relative h-[88vh] min-h-[560px] overflow-hidden">
+      {/* ================= BACKGROUND SLIDE ================= */}
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -40,18 +40,24 @@ export default function HeroPremium() {
         </motion.div>
       </AnimatePresence>
 
-      {/* OVERLAY */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-white/90" />
+      {/* ================= OVERLAY ================= */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/30" />
 
-      {/* CONTENT */}
+      {/* ================= CONTENT ================= */}
       <div className="relative z-10 flex h-full items-center px-5 sm:px-10 lg:px-20">
-        <div className="max-w-xl space-y-6 text-white">
+        {/* 🔒 KUNCI WARNA DI SINI */}
+        <div className="max-w-xl space-y-6 text-primary-foreground">
+          
           <motion.h1
             key={heroSlides[index].title}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
+            transition={{ duration: 0.7 }}
+            className="
+              font-heading font-bold
+              text-4xl sm:text-5xl lg:text-6xl
+              leading-tight
+            "
           >
             {heroSlides[index].title}
           </motion.h1>
@@ -60,16 +66,26 @@ export default function HeroPremium() {
             key={heroSlides[index].subtitle}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9 }}
-            className="text-lg sm:text-xl text-white/90"
+            transition={{ duration: 0.8 }}
+            className="text-lg sm:text-xl text-primary-foreground/90"
           >
             {heroSlides[index].subtitle}
           </motion.p>
 
+          {/* ================= CTA ================= */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Link
               href="#produk"
-              className="bg-pink-500 hover:bg-pink-600 transition px-7 py-3 rounded-full font-semibold text-center"
+              className="
+                inline-flex items-center justify-center
+                bg-primary
+                text-primary-foreground
+                px-7 py-3 rounded-full
+                font-semibold
+                shadow-soft
+                hover:bg-primary/90
+                transition
+              "
             >
               🛍️ Belanja Sekarang
             </Link>
@@ -77,7 +93,15 @@ export default function HeroPremium() {
             <a
               href="https://shopee.co.id/khadeejahijabofficial"
               target="_blank"
-              className="border border-white/70 text-white px-7 py-3 rounded-full font-medium text-center hover:bg-white/10 transition"
+              rel="noopener noreferrer"
+              className="
+                inline-flex items-center justify-center
+                border border-primary-foreground/40
+                text-primary-foreground
+                px-7 py-3 rounded-full
+                hover:bg-primary-foreground/10
+                transition
+              "
             >
               Lihat di Shopee
             </a>
@@ -85,15 +109,16 @@ export default function HeroPremium() {
         </div>
       </div>
 
-      {/* DOTS */}
+      {/* ================= DOTS ================= */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {heroSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            className={`h-2.5 w-2.5 rounded-full transition ${
-              i === index ? "bg-pink-500" : "bg-white/40"
-            }`}
+            className={`
+              h-2.5 w-2.5 rounded-full transition
+              ${i === index ? "bg-primary" : "bg-primary-foreground/40"}
+            `}
           />
         ))}
       </div>

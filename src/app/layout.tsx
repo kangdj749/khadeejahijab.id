@@ -22,15 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className="bg-white text-gray-800">
+    <html lang="id" suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground font-body antialiased">
         {/* PROVIDER HARUS PALING LUAR */}
         <CartProvider>
           {/* ✅ GLOBAL NAVBAR */}
           <NavbarKhadeejah />
 
           {/* PAGE CONTENT */}
-          <main className="min-h-screen pt-16 sm:pt-20">
+          <main className="pb-[76px] md:pb-0">
             {children}
             <MobileBottomNav/>
           </main>
