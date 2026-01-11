@@ -139,7 +139,7 @@ export default function CheckoutClient() {
     <>
       <CheckoutHeader />
 
-      <section className="pb-40 px-4 pt-4 bg-pink-50 min-h-screen">
+      <section className="bg-background min-h-screen py-8 px-4 space-y-14 pb-28 sm:pb-0">
         <div className="max-w-md mx-auto space-y-6">
           <CheckoutAddress form={form} setForm={setForm} />
           <CheckoutShipping

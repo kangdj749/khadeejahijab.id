@@ -56,8 +56,8 @@ export default function PaymentFinishClient() {
         };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-pink-50 px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full text-center space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-primary-foreground px-4">
+      <div className="bg-primary-foreground rounded-2xl shadow-lg p-6 max-w-md w-full text-center space-y-4">
         <h1 className={`text-xl font-bold ${status.color}`}>
           {status.title}
         </h1>
@@ -73,14 +73,14 @@ export default function PaymentFinishClient() {
         <div className="flex flex-col gap-3 pt-4">
           <Link
             href="/"
-            className="rounded-xl bg-pink-600 text-white py-3 text-sm font-semibold hover:bg-pink-700 transition"
+            className="rounded-xl bg-primary text-white py-3 text-sm font-semibold hover:opacity-80 transition"
           >
             Kembali ke Beranda
           </Link>
 
           <button
             onClick={() => router.push("/keranjang")}
-            className="rounded-xl border border-pink-400 text-pink-600 py-3 text-sm font-medium hover:bg-pink-50 transition"
+            className="rounded-xl border border-border text-primary-foreground bg-primary py-3 text-sm font-medium hover:opacity-80 transition"
           >
             Lihat Keranjang
           </button>

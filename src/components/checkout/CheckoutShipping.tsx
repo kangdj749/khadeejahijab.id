@@ -97,8 +97,8 @@ export default function CheckoutShipping({
   /* ================= UI ================= */
 
   return (
-    <div className="bg-white rounded-2xl p-4 space-y-4 shadow-sm">
-      <h3 className="font-semibold">Pengiriman</h3>
+    <div className="bg-card rounded-2xl p-4 space-y-4 shadow-sm border border-border">
+      <h3 className="font-semibold text-primary">Pengiriman</h3>
 
       {/* 🔍 SEARCH + BUTTON */}
       <div className="flex gap-2">
@@ -106,27 +106,27 @@ export default function CheckoutShipping({
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           placeholder="Cari kota / kabupaten"
-          className="flex-1 rounded-xl border px-4 py-3 text-sm outline-none"
+          className="flex-1 rounded-xl border border-border px-4 py-3 text-sm outline-none"
         />
 
         <button
           onClick={fetchOngkir}
           disabled={!selectedKab || loading || !addressComplete}
-          className="rounded-xl bg-pink-600 px-4 text-white text-sm disabled:opacity-50"
+          className="rounded-xl bg-primary px-4 text-primary-foreground text-sm disabled:opacity-50"
         >
           Cek
         </button>
       </div>
 
       {!addressComplete && (
-        <p className="text-xs text-red-500">
+        <p className="text-xs text-primary">
           Lengkapi alamat terlebih dahulu untuk cek ongkir
         </p>
       )}
 
       {/* 📍 HASIL SEARCH */}
       {filtered.length > 0 && (
-        <div className="rounded-xl border max-h-48 overflow-auto">
+        <div className="rounded-xl border border-border max-h-48 overflow-auto">
           {filtered.map((w) => (
             <button
               key={w.id}
@@ -136,7 +136,7 @@ export default function CheckoutShipping({
                 setSearch(w.label);
                 setFiltered([]);
               }}
-              className="w-full px-4 py-2 text-left hover:bg-pink-50 text-sm"
+              className="w-full px-4 py-2 text-left hover:bg-primary-soft text-sm"
             >
               {w.label}
             </button>
@@ -146,7 +146,7 @@ export default function CheckoutShipping({
 
       {/* ⏳ LOADING */}
       {loading && (
-        <div className="h-12 animate-pulse rounded-xl bg-gray-200" />
+        <div className="h-12 animate-pulse rounded-xl bg-border" />
       )}
 
       {/* 🚚 LIST ONGKIR */}
@@ -154,17 +154,17 @@ export default function CheckoutShipping({
         <button
           key={`${s.courier}-${s.service}`}
           onClick={() => onSelectService(s)}
-          className="w-full rounded-xl border px-4 py-3 flex justify-between items-center hover:bg-pink-50"
+          className="w-full rounded-xl border border-border px-4 py-3 flex justify-between items-center hover:bg-primary-soft"
         >
           <div>
             <div className="font-semibold text-sm">
               {s.courier.toUpperCase()} – {s.service}
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-foreground/80">
               Estimasi {s.etd} hari
             </div>
           </div>
-          <div className="font-semibold text-pink-600">
+          <div className="font-semibold text-primary">
             Rp {s.cost.toLocaleString("id-ID")}
           </div>
         </button>

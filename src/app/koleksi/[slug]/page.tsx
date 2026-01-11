@@ -11,6 +11,8 @@ import { CheckCircle } from "lucide-react";
 /* =========================
    SEO METADATA
 ========================= */
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(
   { params }: { params: { slug: string } }
 ): Promise<Metadata> {

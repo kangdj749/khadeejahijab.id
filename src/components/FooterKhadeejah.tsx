@@ -1,12 +1,13 @@
 import { Instagram, Facebook, Mail, Phone } from "lucide-react"
+import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer id="kontak" className="bg-pink-50 text-gray-700 py-10 px-6 sm:px-10 mt-12">
+    <footer id="kontak" className="bg-primary-soft text-foreground py-10 px-6 sm:px-10 mt-12">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Brand */}
         <div>
-          <h3 className="text-xl font-semibold text-pink-600 mb-3">
+          <h3 className="text-xl font-semibold text-primary mb-3">
             KhadeejaHijab
           </h3>
           <p className="text-sm">
@@ -17,7 +18,7 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h4 className="font-semibold text-gray-800 mb-3">Kontak Kami</h4>
+          <h4 className="font-semibold text-foreground mb-3">Kontak Kami</h4>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
               <Phone size={16} /> <span>0857-1234-5678</span>
@@ -30,32 +31,35 @@ export default function Footer() {
 
         {/* Sosial */}
         <div>
-          <h4 className="font-semibold text-gray-800 mb-3">Ikuti Kami</h4>
+          <h4 className="font-semibold text-foreground mb-3">Ikuti Kami</h4>
           <div className="flex gap-4">
             <a
               href="https://instagram.com/khadeejahijabofficial"
               target="_blank"
-              className="hover:text-pink-500"
+              className="hover:text-primary-soft"
             >
               <Instagram size={20} />
             </a>
             <a
               href="https://facebook.com"
               target="_blank"
-              className="hover:text-pink-500"
+              className="hover:text-primary-soft"
             >
               <Facebook size={20} />
             </a>
             <a
               href="https://www.tiktok.com/@khadeejahijab.idn"
               target="_blank"
-              className="hover:text-pink-500"
+              className="hover:text-primary-soft"
             >
-              <img
-                src="/icons/tiktok.svg"
+              <Image
+                src="/tiktok.svg"
                 alt="TikTok"
+                width={20}
+                height={20}
                 className="w-5 h-5 opacity-80 hover:opacity-100"
               />
+              
             </a>
           </div>
         </div>

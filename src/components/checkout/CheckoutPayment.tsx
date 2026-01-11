@@ -7,13 +7,13 @@ interface Props {
 
 export default function CheckoutPayment({ value, onChange }: Props) {
   return (
-    <div className="space-y-3">
-      <h3 className="font-semibold">Metode Pembayaran</h3>
+    <div className="bg-card rounded-2xl p-4 space-y-4 shadow-sm border border-border">
+      <h3 className="font-semibold text-primary">Metode Pembayaran</h3>
 
       <button
         onClick={() => onChange("whatsapp")}
-        className={`w-full p-4 border rounded-xl text-left ${
-          value === "whatsapp" ? "border-green-600" : ""
+        className={`w-full p-4 border border-border rounded-xl text-left ${
+          value === "whatsapp" ? "border-primary-soft" : ""
         }`}
       >
         Bayar via WhatsApp
@@ -21,8 +21,8 @@ export default function CheckoutPayment({ value, onChange }: Props) {
 
       <button
         onClick={() => onChange("midtrans")}
-        className={`w-full p-4 border rounded-xl text-left ${
-          value === "midtrans" ? "border-blue-600" : ""
+        className={`w-full p-4 border border-border rounded-xl text-left ${
+          value === "midtrans" ? "border-primary-soft" : ""
         }`}
       >
         Bayar Otomatis (Midtrans)

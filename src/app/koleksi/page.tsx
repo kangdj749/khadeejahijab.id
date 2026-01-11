@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     "Temukan koleksi jilbab dan gamis terbaru untuk berbagai kebutuhan. Nyaman dipakai, desain modern, dan siap tampil elegan.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function KoleksiPage() {
   const koleksi = await getAllKoleksi();
 
@@ -17,7 +19,7 @@ export default async function KoleksiPage() {
     return (
       <main className="max-w-6xl mx-auto px-4 pt-24 pb-16 text-center">
         <h1 className="text-2xl font-bold mb-2">Koleksi Belum Tersedia</h1>
-        <p className="text-gray-500">
+        <p className="text-foreground/50">
           Silakan kembali lagi, koleksi sedang kami siapkan ✨
         </p>
       </main>
@@ -47,13 +49,13 @@ export default async function KoleksiPage() {
               key={k.slug}
               href={`/koleksi/${k.slug}`}
               className="
-                group bg-white rounded-2xl overflow-hidden
+                group bg-primary-foreground rounded-2xl overflow-hidden
                 shadow-soft hover:-translate-y-1
                 transition-all duration-300
               "
             >
               {/* IMAGE */}
-              <div className="relative aspect-[4/5] bg-gray-100">
+              <div className="relative aspect-[4/5] bg-border">
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
@@ -101,7 +103,7 @@ export default async function KoleksiPage() {
         <div className="flex justify-center gap-3">
           <Link
             href="/produk"
-            className="px-6 py-3 rounded-full bg-primary text-white text-sm font-medium shadow-soft"
+            className="px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-soft"
           >
             Lihat Semua Produk
           </Link>

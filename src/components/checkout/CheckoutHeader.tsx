@@ -6,16 +6,16 @@ export default function CheckoutHeader() {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b">
+    <header className="sticky top-0 z-40 bg-primary-foreground border-b">
       <div className="max-w-md mx-auto flex items-center gap-3 px-4 h-14">
         <button
           onClick={() => router.back()}
-          className="text-xl font-semibold"
+          className="text-xl font-bold"
         >
           ←
         </button>
 
-        <h1 className="font-semibold text-lg">Checkout</h1>
+        <h1 className="font-semibold text-lg text-primary">Checkout</h1>
       </div>
     </header>
   );

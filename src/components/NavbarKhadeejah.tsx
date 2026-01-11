@@ -191,7 +191,7 @@ export default function NavbarKhadeejah() {
                       <p className="font-medium line-clamp-1 text-foreground">
                         {item.product.name}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-xs text-foreground/80">
                         {item.qty} × Rp{" "}
                         {(item.product.discountPrice ??
                           item.product.price
@@ -213,7 +213,7 @@ export default function NavbarKhadeejah() {
                     onClick={() => setShowCart(false)}
                     className="
                       block mt-3
-                      bg-primary text-primary-foreground
+                      bg-primary text-card
                       py-2.5 rounded-xl
                       text-center text-sm font-medium
                       hover:bg-primary/90 transition

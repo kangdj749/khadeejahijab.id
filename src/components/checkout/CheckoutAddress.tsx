@@ -12,8 +12,8 @@ interface Props {
 
 export default function CheckoutAddress({ form, setForm }: Props) {
   return (
-    <div className="space-y-3">
-      <h3 className="font-semibold">Alamat Pengiriman</h3>
+    <div className="bg-card rounded-2xl p-4 space-y-4 shadow-sm border border-border">
+      <h3 className="font-semibold text-primary">Alamat Pengiriman</h3>
 
       <input
         placeholder="Nama"
@@ -21,7 +21,7 @@ export default function CheckoutAddress({ form, setForm }: Props) {
         onChange={(e) =>
           setForm({ ...form, nama: e.target.value })
         }
-        className="w-full border rounded-lg p-3"
+        className="w-full border border-border rounded-lg p-3"
       />
 
       <input
@@ -30,7 +30,7 @@ export default function CheckoutAddress({ form, setForm }: Props) {
         onChange={(e) =>
           setForm({ ...form, nohp: e.target.value })
         }
-        className="w-full border rounded-lg p-3"
+        className="w-full border border-border rounded-lg p-3"
       />
 
       <textarea
@@ -39,7 +39,7 @@ export default function CheckoutAddress({ form, setForm }: Props) {
         onChange={(e) =>
           setForm({ ...form, alamat: e.target.value })
         }
-        className="w-full border rounded-lg p-3"
+        className="w-full border border-border rounded-lg p-3"
       />
     </div>
   );
