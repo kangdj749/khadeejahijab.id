@@ -23,13 +23,14 @@ export type CustomerData = {
 };
 
 export type CheckoutData = {
-  orderId: string;
+  orderId: string;  
   customer: CustomerData;
   items: OrderItem[];
   shipping: ShippingData;
   subtotal: number;
   total_weight: number;
   total: number;
+  affiliate?: string | null;
   payment_method: "whatsapp" | "midtrans";
   payment_status: "pending";
 };

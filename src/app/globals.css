@@ -13,10 +13,15 @@
   --border: 226 232 240;        /* slate-200 */
   --muted: 241 245 249;         /* slate-100 */
 
-  /* ================= BRAND ================= */
-  --primary: 236 72 153;        /* pink-500 */
+  /* ================= BRAND ================= 
+  --primary: 236 72 153;        /* pink-500 
   --primary-foreground: 255 255 255;
   --primary-soft: 252 231 243;  /* pink-100 */
+
+  /* ================= BRAND ================= */
+  --primary: 31 122 90;        /* tosca-500 */
+  --primary-foreground: 255 255 255;
+  --primary-soft: 19 193 135;  /* tosca-100 */
 
   /* ================= TYPO ================= */
   --font-heading: "Poppins";

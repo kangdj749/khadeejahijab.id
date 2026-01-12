@@ -9,6 +9,7 @@ import HomeCuratedProducts from "@/components/HomeCuratedProducts";
 import TestimoniKhadeejah from "@/components/TestimoniKhadeejah";
 import TentangKamiKhadeejah from "@/components/TentangKamiKhadeejah";
 import HybridWhatsAppCTA from "@/components/HybridWhatsAppCTA";
+import { saveAffiliate } from "@/lib/cookies";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -17,6 +18,13 @@ export default function LandingPage() {
       once: true,
       easing: "ease-in-out",
     });
+
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+
+    if (ref) {
+      saveAffiliate(ref);
+    }
   }, []);
 
   return (

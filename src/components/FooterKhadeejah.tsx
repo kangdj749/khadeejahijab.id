@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer id="kontak" className="bg-primary-soft text-foreground py-10 px-6 sm:px-10 mt-12">
+    <footer id="kontak" className="bg-primary/30 text-foreground py-10 px-6 sm:px-10 mt-12">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Brand */}
         <div>

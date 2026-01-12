@@ -179,7 +179,7 @@ export default function CartPage() {
                             setEditingItem({ index, item });
                             setTempVariations(item.selectedVariations ?? {});
                           }}
-                          className="ml-2 px-2 py-1 bg-primary-soft rounded-full text-primary text-xs font-medium hover:opacity-80"
+                          className="ml-2 px-2 py-1 bg-primary rounded-full text-primary-foreground text-xs font-medium hover:opacity-70"
                         >
                           Edit Variasi
                         </button>

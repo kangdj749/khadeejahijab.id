@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
 
         body.total,
-
+        body.affiliate ?? "-", // 🔥 AFFILIATE
         body.payment_method,
         "pending",
 

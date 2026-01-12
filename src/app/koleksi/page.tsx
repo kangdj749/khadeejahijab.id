@@ -30,10 +30,10 @@ export default async function KoleksiPage() {
     <main className="max-w-6xl mx-auto px-4 pt-24 pb-20">
       {/* HERO */}
       <section className="max-w-3xl mb-10">
-        <h1 className="text-2xl sm:text-3xl font-heading font-bold mb-3">
+        <h1 className="text-2xl sm:text-3xl font-heading text-foreground font-bold mb-3">
           Koleksi Busana Muslim Wanita
         </h1>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-foreground leading-relaxed">
           Temukan berbagai koleksi pilihan yang dirancang untuk menunjang
           aktivitas harian hingga acara spesial.
         </p>
@@ -55,7 +55,7 @@ export default async function KoleksiPage() {
               "
             >
               {/* IMAGE */}
-              <div className="relative aspect-[4/5] bg-border">
+              <div className="relative aspect-[4/5] bg-border border border-border">
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
@@ -73,11 +73,11 @@ export default async function KoleksiPage() {
 
               {/* CONTENT */}
               <div className="p-4">
-                <h2 className="font-heading font-semibold text-sm sm:text-base mb-1 line-clamp-2">
+                <h2 className="font-heading font-semibold text-sm sm:text-primary mb-1 line-clamp-2">
                   {k.h1}
                 </h2>
 
-                <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">
+                <p className="text-xs sm:text-sm text-foreground line-clamp-2">
                   {k.excerpt ||
                     "Lihat koleksi pilihan dengan desain terbaik dan kualitas nyaman dipakai."}
                 </p>
@@ -96,7 +96,7 @@ export default async function KoleksiPage() {
         <h3 className="font-heading font-semibold text-xl mb-3">
           Bingung pilih koleksi yang cocok?
         </h3>
-        <p className="text-gray-600 mb-6">
+        <p className="text-foreground mb-6">
           Jelajahi semua produk kami atau gunakan pencarian.
         </p>
 
