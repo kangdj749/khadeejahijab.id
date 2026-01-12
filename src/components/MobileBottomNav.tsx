@@ -55,52 +55,52 @@ export default function MobileBottomNav() {
           return (
             <li key={href} className="flex-1">
               <Link
-                href={href}
+              href={href}
+              className={clsx(
+                `
+                flex flex-col items-center gap-1
+                py-2
+                text-xs font-medium
+                transition
+              `,
+                active
+                  ? "text-primary"
+                  : "text-foreground/60 hover:text-foreground"
+              )}
+            >
+              <div
                 className={clsx(
                   `
-                  flex flex-col items-center gap-1
-                  py-2
-                  text-xs font-medium
+                  relative
+                  flex items-center justify-center
+                  w-10 h-10 rounded-xl
                   transition
                 `,
                   active
-                    ? "text-primary"
-                    : "text-muted hover:text-foreground"
+                    ? "bg-primary/15"
+                    : "hover:bg-muted"
                 )}
               >
-                <div
-                  className={clsx(
-                    `
-                    relative
-                    flex items-center justify-center
-                    w-10 h-10 rounded-xl
-                    transition
-                  `,
-                    active
-                      ? "bg-primary/15"
-                      : "hover:bg-muted"
-                  )}
-                >
-                  <Icon size={20} />
+                <Icon size={20} className="stroke-current" />
 
-                  {/* CART BADGE */}
-                  {label === "Koleksi" && getTotalQty() > 0 && (
-                    <span
-                      className="
-                        absolute -top-1 -right-1
-                        bg-primary text-primary-foreground
-                        text-[10px] font-semibold
-                        w-4 h-4 rounded-full
-                        flex items-center justify-center
-                      "
-                    >
-                      {getTotalQty()}
-                    </span>
-                  )}
-                </div>
+                {label === "Koleksi" && getTotalQty() > 0 && (
+                  <span
+                    className="
+                      absolute -top-1 -right-1
+                      bg-primary text-primary-foreground
+                      text-[10px] font-semibold
+                      w-4 h-4 rounded-full
+                      flex items-center justify-center
+                    "
+                  >
+                    {getTotalQty()}
+                  </span>
+                )}
+              </div>
 
-                <span>{label}</span>
-              </Link>
+              <span>{label}</span>
+            </Link>
+
             </li>
           );
         })}
