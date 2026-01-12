@@ -1,55 +1,32 @@
 @import "tailwindcss";
 
 /* ======================================================
-   DESIGN TOKENS (SOURCE OF TRUTH)
-   → hanya RGB number (tanpa rgb())
+   DESIGN TOKENS — COMMERCE SAFE (FINAL)
 ====================================================== */
 :root {
   /* ================= SURFACE ================= */
   --background: 255 255 255;
-  --foreground: 17 24 39;       /* gray-900 */
+  --foreground: 17 24 39;
 
   --card: 255 255 255;
-  --border: 226 232 240;        /* slate-200 */
-  --muted: 241 245 249;         /* slate-100 */
-
-  /* ================= BRAND ================= 
-  --primary: 236 72 153;        /* pink-500 
-  --primary-foreground: 255 255 255;
-  --primary-soft: 252 231 243;  /* pink-100 */
+  --border: 226 232 240;
+  --muted: 241 245 249;
 
   /* ================= BRAND ================= */
-  --primary: 31 122 90;        /* tosca-500 */
+  --primary: 236 72 153;
   --primary-foreground: 255 255 255;
-  --primary-soft: 19 193 135;  /* tosca-100 */
+  --primary-soft: 252 231 243;
 
   /* ================= TYPO ================= */
   --font-heading: "Poppins";
   --font-body: "Inter";
+
+  /* 🚨 PAKSA LIGHT MODE */
+  color-scheme: light;
 }
 
 /* ======================================================
-   DARK MODE (AUTO, AMAN KONTRAS)
-====================================================== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-
-    --background: 17 24 39;     /* slate-900 */
-    --foreground: 243 244 246;  /* slate-100 */
-
-    --card: 30 41 59;           /* slate-800 */
-    --border: 51 65 85;         /* slate-700 */
-    --muted: 30 41 59;
-
-    --primary: 236 72 153;      /* brand tetap */
-    --primary-foreground: 255 255 255;
-    --primary-soft: 190 24 93;  /* pink-700 */
-  }
-}
-
-/* ======================================================
-   TAILWIND v4 THEME BRIDGE  ⭐ INI KUNCI UTAMA ⭐
+   TAILWIND v4 THEME BRIDGE (TETAP)
 ====================================================== */
 @theme {
   --color-background: rgb(var(--background));
@@ -76,20 +53,6 @@ body {
   background-color: rgb(var(--background));
   color: rgb(var(--foreground));
   font-family: var(--font-body), system-ui, sans-serif;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-img,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
 }
 
 html {
