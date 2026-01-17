@@ -1,56 +1,60 @@
 import { NextResponse } from "next/server";
-import { appendSheet } from "@/lib/google-sheet";
-import type { PendingOrder } from "@/types/order";
+import { appendOrder } from "@/lib/google-sheet";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as PendingOrder;
+    const body = await req.json();
 
-    /* ================= VALIDATION ================= */
-    if (
-      !body.orderId ||
-      !body.customer?.name ||
-      !body.items ||
-      body.items.length === 0
-    ) {
+    const {
+      orderId,
+      customer,
+      items,
+      subtotal,
+      shipping,
+      total,
+      affiliate, // ✅ OPTIONAL
+    } = body;
+
+    /* =========================
+       VALIDATION MINIMAL
+    ========================= */
+    if (!orderId || !customer || !items || !shipping) {
       return NextResponse.json(
-        { message: "Invalid order data" },
+        { error: "Invalid order data" },
         { status: 400 }
       );
     }
 
-    /* ================= PREPARE ROW ================= */
-    if (body.payment_method !== "midtrans") {
-      await appendSheet("pending_orders", [
-        body.orderId,
-        new Date().toISOString(),
+    /* =========================
+       ROW SESUAI STRUKTUR SHEET
+       A - Q
+    ========================= */
+    const row = [
+      orderId,                                      // A order_id
+      new Date().toISOString(),                     // B created_at
+      customer.name,                                // C nama
+      customer.phone,                               // D nohp
+      customer.address,                             // E alamat
+      customer.city,                                // F kota
+      JSON.stringify(items),                        // G items
+      subtotal,                                     // H subtotal
+      shipping.cost,                                // I ongkir
+      `${shipping.courier} - ${shipping.service}`,  // J shipping_service
+      total,                                        // K total
+      "midtrans",                                   // L payment_method (default)
+      "pending",                                    // M payment_status
+      "",                                           // N midtrans_order_id
+      "",                                           // O snap_token (ISI NANTI)
+      affiliate ?? "",                          // Q affiliate_code (TERAKHIR)
+    ];
 
-        body.customer.name,
-        body.customer.phone,
-        body.customer.address,
-        body.customer.city ?? "-",
+    await appendOrder(row);
 
-        JSON.stringify(body.items),
-
-        body.subtotal,
-        body.shipping.cost,
-        `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
-
-        body.total,
-        body.affiliate ?? "-", // 🔥 AFFILIATE
-        body.payment_method,
-        "pending",
-
-        "-", // midtrans_order_id
-        "-", // snap_token
-      ]);
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("CREATE ORDER ERROR", err);
+    console.error("❌ CREATE ORDER ERROR:", err);
     return NextResponse.json(
-      { message: "Gagal menyimpan order" },
+      { error: "Create order failed" },
       { status: 500 }
     );
   }

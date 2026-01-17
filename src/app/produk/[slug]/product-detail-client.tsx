@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
@@ -12,6 +13,7 @@ import {
   ShoppingBag,
   PlayCircle,
   ArrowLeft,
+  ZoomIn,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Product, ProductVariant } from "@/types";
@@ -30,6 +32,7 @@ export default function ProductDetailClient({ product }: Props) {
   const [variations, setVariations] = useState<Record<string, string>>({});
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFullDesc, setShowFullDesc] = useState(false);
+  const [zoom, setZoom] = useState(false);
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -49,7 +52,7 @@ export default function ProductDetailClient({ product }: Props) {
     );
   }, [product.variants, product.variations, variations]);
 
-  /* ================= IMAGE ================= */
+  /* ================= IMAGE SOURCE ================= */
   const displayImage =
     selectedVariant?.image || product.image || "/placeholder.png";
 
@@ -61,6 +64,7 @@ export default function ProductDetailClient({ product }: Props) {
     [displayImage, product.gallery]
   );
 
+  /* 🔗 VARIANT → IMAGE SYNC (TIDAK DIUBAH LOGIKANYA) */
   useEffect(() => {
     if (!selectedVariant?.image) return;
     const idx = allImages.findIndex((img) => img === selectedVariant.image);
@@ -102,7 +106,8 @@ export default function ProductDetailClient({ product }: Props) {
   useEffect(() => {
     if (!product.category) return;
     fetch(
-      `/api/products/related?category=${product.category}&exclude=${product.id}`
+      `/api/products/related?category=${product.category}&exclude=${product.id}`,
+      { next: { revalidate: 600 } }
     )
       .then((r) => r.json())
       .then((d) => Array.isArray(d) && setRelated(d))
@@ -121,28 +126,21 @@ export default function ProductDetailClient({ product }: Props) {
   /* ================= RENDER ================= */
   return (
     <section className="bg-background min-h-screen py-8 px-4 space-y-14 pb-28 sm:pb-0">
-      {/* ================= CARD ================= */}
       <div className="max-w-md mx-auto bg-card rounded-3xl shadow-card border border-border overflow-hidden">
         {/* BACK */}
         <div className="px-4 pt-4">
           <Link
             href="/"
-            className="
-              inline-flex items-center gap-2
-              text-sm px-4 py-2 rounded-full
-              bg-primary-soft
-              border border-border
-              text-primary
-            "
+            className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full bg-primary-soft border border-border text-primary"
           >
             <ArrowLeft className="w-4 h-4" />
             Kembali Belanja
           </Link>
         </div>
 
-        {/* IMAGE */}
+        {/* ================= IMAGE (OPTIMIZED + ZOOM) ================= */}
         <div
-          className="relative w-full aspect-square overflow-hidden mt-4"
+          className="relative w-full aspect-square overflow-hidden mt-4 group"
           onTouchStart={(e) =>
             (touchStartX.current = e.changedTouches[0].screenX)
           }
@@ -156,21 +154,34 @@ export default function ProductDetailClient({ product }: Props) {
             src={cloudinaryImage(allImages[activeIndex], 1000)}
             alt={product.name}
             fill
-            priority
-            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 480px"
+            priority={activeIndex === 0}
+            loading={activeIndex === 0 ? "eager" : "lazy"}
+            placeholder="blur"
+            blurDataURL="/blur.png"
+            className={`object-cover transition-transform duration-300 ${
+              zoom ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
+            }`}
+            onClick={() => setZoom((p) => !p)}
           />
 
+          {/* ZOOM ICON */}
+          <div className="absolute bottom-3 right-3 bg-black/40 text-white p-2 rounded-full">
+            <ZoomIn className="w-4 h-4" />
+          </div>
+
+          {/* CHEVRON OVERLAY */}
           {allImages.length > 1 && (
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-card/80 p-2 rounded-full"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 bg-black/40 backdrop-blur text-white p-2 rounded-full"
               >
                 <ChevronLeft />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-card/80 p-2 rounded-full"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-black/40 backdrop-blur text-white p-2 rounded-full"
               >
                 <ChevronRight />
               </button>
@@ -178,42 +189,49 @@ export default function ProductDetailClient({ product }: Props) {
           )}
         </div>
 
-        {/* THUMB */}
-        <div className="flex gap-3 overflow-x-auto px-4 py-3 bg-muted/40">
-          {allImages.map((img, i) => (
-            <button
-              key={img}
-              onClick={() => setActiveIndex(i)}
-              className={`
-                relative w-20 aspect-square rounded-xl overflow-hidden border-2
-                ${
-                  activeIndex === i
-                    ? "border-primary"
-                    : "border-border"
-                }
-              `}
-            >
-              <Image
-                src={cloudinaryImage(img, 300)}
-                alt=""
-                fill
-                className="object-cover"
-              />
-            </button>
-          ))}
-        </div>
+        {/* ================= THUMBNAIL ================= */}
+        {allImages.length > 1 && (
+          <div className="px-4 py-3 bg-muted/40">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar">
+              {allImages.map((img, i) => (
+                <button
+                  key={img}
+                  onClick={() => setActiveIndex(i)}
+                  className={`relative w-20 aspect-square shrink-0 rounded-xl overflow-hidden border-2 ${
+                    activeIndex === i
+                      ? "border-primary"
+                      : "border-border"
+                  }`}
+                >
+                  <Image
+                    src={cloudinaryImage(img, 300)}
+                    alt=""
+                    fill
+                    loading="lazy"
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-        {/* CONTENT */}
+        {/* ================= CONTENT ================= */}
         <div className="p-6 space-y-6">
-          <h1 className="text-2xl font-bold text-foreground">
-            {product.name}
-          </h1>
+          <h1 className="text-2xl font-bold">{product.name}</h1>
 
-          <p className="text-primary font-semibold text-lg">
-            Rp {activePrice.toLocaleString("id-ID")}
-          </p>
+          <div className="flex items-end gap-3">
+            <p className="text-primary font-bold text-2xl">
+              Rp {activePrice.toLocaleString("id-ID")}
+            </p>
+            {(selectedVariant?.discountPrice || product.discountPrice) && (
+              <p className="text-sm text-muted-foreground line-through">
+                Rp {product.price.toLocaleString("id-ID")}
+              </p>
+            )}
+          </div>
 
-          <p className="text-xs text-muted">
+          <p className="text-xs text-muted-foreground">
             Berat: {activeWeight} gr
           </p>
 
@@ -228,14 +246,11 @@ export default function ProductDetailClient({ product }: Props) {
                     onClick={() =>
                       setVariations((p) => ({ ...p, [v.name]: opt }))
                     }
-                    className={`
-                      px-3 py-1 rounded-full border text-sm
-                      ${
-                        variations[v.name] === opt
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "border-border"
-                      }
-                    `}
+                    className={`px-3 py-1 rounded-full border text-sm transition ${
+                      variations[v.name] === opt
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-border"
+                    }`}
                   >
                     {opt}
                   </button>
@@ -265,16 +280,12 @@ export default function ProductDetailClient({ product }: Props) {
 
           <button
             onClick={handleAddToCart}
-            className="
-              w-full bg-primary text-primary-foreground
-              py-3 rounded-xl
-              flex items-center justify-center gap-2
-              hover:bg-primary/90 transition
-            "
+            className="w-full bg-primary text-primary-foreground py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90"
           >
             <ShoppingCart /> Masuk Keranjang
           </button>
-           {/* MARKETPLACE */}
+
+          {/* MARKETPLACE */}
           <div className="flex gap-2">
             {product.marketplace?.shopee && (
               <a
@@ -304,7 +315,6 @@ export default function ProductDetailClient({ product }: Props) {
               </a>
             )}
           </div>
-
         </div>
       </div>
 
@@ -312,9 +322,7 @@ export default function ProductDetailClient({ product }: Props) {
       <div className="max-w-6xl mx-auto px-2">
         <h2 className="font-semibold mb-4">Produk Terkait</h2>
         {related.length === 0 ? (
-          <p className="text-sm text-muted">
-            Belum ada produk terkait
-          </p>
+          <p className="text-sm text-muted">Belum ada produk terkait</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {related.map((p) => (

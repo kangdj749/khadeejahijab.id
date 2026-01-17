@@ -1,5 +1,7 @@
 // app/checkout/page.tsx
 "use client";
+export const dynamic = "force-dynamic";
+
 
 import { useEffect, useState } from "react";
 //import Image from "next/image";
@@ -16,6 +18,7 @@ import type { CourierService } from "@/types/shipping";
 import type { CheckoutData } from "@/lib/format-wa";
 import type { CheckoutItem } from "@/types/checkout";
 import type { KabupatenOption } from "@/components/checkout/CheckoutShipping";
+import { getAffiliate } from "@/lib/affiliate";
 
 export default function CheckoutClient() {
   /* ================= ADDRESS ================= */
@@ -72,8 +75,10 @@ export default function CheckoutClient() {
   async function handlePay() {
     if (!canCheckout) return;
 
+    const affiliate = getAffiliate()  
     const checkoutData: CheckoutData = {
       orderId: `ORD-${Date.now()}`,
+      
       customer: {
         name: form.nama,
         phone: form.nohp,
@@ -97,6 +102,7 @@ export default function CheckoutClient() {
       subtotal,
       total_weight: items.reduce((sum, i) => sum + i.weight * i.qty, 0),
       total,
+      affiliate: affiliate?.code ?? null, // 🔥 BARU
       payment_method: paymentMethod,
       payment_status: "pending",
     };
@@ -122,7 +128,11 @@ export default function CheckoutClient() {
       const res = await fetch("/api/midtrans/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(checkoutData),
+        body: JSON.stringify({
+        orderId: checkoutData.orderId,
+        items: checkoutData.items,
+        customer: checkoutData.customer,
+        }),
       });
       const { token } = await res.json();
       if (!token) throw new Error("Token Midtrans kosong");

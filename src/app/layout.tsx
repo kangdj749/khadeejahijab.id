@@ -7,6 +7,7 @@ import FooterKhadeejah from "@/components/FooterKhadeejah";
 import { GlobalToaster } from "@/components/GlobalToaster";
 import { CartProvider } from "./context/CartContext";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import AffiliateTracker from "@/components/AffiliateTracker";
 
 export const metadata: Metadata = {
   title: {
@@ -24,19 +25,25 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground font-body antialiased">
+
+        {/* 🧠 AFFILIATE TRACKER (HARUS PALING AWAL) */}
+        <AffiliateTracker />
+
         {/* PROVIDER HARUS PALING LUAR */}
         <CartProvider>
+
           {/* ✅ GLOBAL NAVBAR */}
           <NavbarKhadeejah />
 
           {/* PAGE CONTENT */}
           <main className="pb-[76px] md:pb-0">
             {children}
-            <MobileBottomNav/>
+            <MobileBottomNav />
           </main>
 
           {/* OPTIONAL GLOBAL FOOTER */}
           <FooterKhadeejah />
+
         </CartProvider>
 
         {/* GLOBAL TOAST */}

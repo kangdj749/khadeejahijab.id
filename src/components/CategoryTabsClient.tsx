@@ -19,27 +19,31 @@ export default function CategoryTabsClient({
       <button
         onClick={() => router.push("/search")}
         className={`px-4 py-2 rounded-full text-sm ${
-          !active ? "bg-black text-white" : "bg-gray-100"
+          !active ? "bg-primary text-primary-foreground" : "bg-primary-soft"
         }`}
       >
         Semua
       </button>
 
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          onClick={() =>
-            router.push(`/search?category=${slugify(cat)}`)
-          }
-          className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-            active === cat
-              ? "bg-black text-white"
-              : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {cat}
-        </button>
-      ))}
+      {categories.map((cat) => {
+        const slug = slugify(cat);
+
+        return (
+          <button
+            key={cat}
+            onClick={() =>
+              router.push(`/search?category=${slug}`)
+            }
+            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+              active === slug
+                ? "bg-primary text-primary-foreground"
+                : "bg-primary-soft text-gray-700"
+            }`}
+          >
+            {cat}
+          </button>
+        );
+      })}
     </div>
   );
 }

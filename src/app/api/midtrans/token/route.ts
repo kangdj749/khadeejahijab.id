@@ -1,100 +1,63 @@
 import { NextResponse } from "next/server";
 import midtransClient from "midtrans-client";
-import { appendSheet } from "@/lib/google-sheet";
-import type { CheckoutData } from "@/lib/format-wa";
+import { updateSnapToken } from "@/lib/google-sheet";
 
-export const dynamic = "force-dynamic";
+interface Item {
+  id: string;
+  name: string;
+  price: number;
+  qty: number;
+}
+
+interface Payload {
+  orderId: string;
+  items: Item[];
+  customer: {
+    name: string;
+    phone: string;
+    address: string;
+  };
+}
+
+const snap = new midtransClient.Snap({
+  isProduction: false,
+  serverKey: process.env.MIDTRANS_SERVER_KEY!,
+});
 
 export async function POST(req: Request) {
-  try {
-    const body = (await req.json()) as CheckoutData;
+  const body = (await req.json()) as Payload;
 
-    /* ================= VALIDATION ================= */
-    if (!body.orderId || !body.customer || body.items.length === 0) {
-      return NextResponse.json(
-        { message: "Invalid checkout data" },
-        { status: 400 }
-      );
-    }
+  const item_details = body.items.map((i) => ({
+    id: i.id,
+    name: i.name,
+    price: Number(i.price),
+    quantity: Number(i.qty),
+  }));
 
-    /* ================= MIDTRANS INIT ================= */
-    const snap = new midtransClient.Snap({
-      isProduction: process.env.MIDTRANS_IS_PRODUCTION === "true",
-      serverKey: process.env.MIDTRANS_SERVER_KEY!,
-      clientKey: process.env.MIDTRANS_CLIENT_KEY!, // ✅ WAJIB REAL
-    });
+  const gross_amount = item_details.reduce(
+    (sum, i) => sum + i.price * i.quantity,
+    0
+  );
 
-    /* ================= ITEMS ================= */
-    const item_details = body.items.map((item) => ({
-      id: String(item.id),
-      name: item.name,
-      price: item.price,
-      quantity: item.qty,
-    }));
-
-    item_details.push({
-      id: "ONGKIR",
-      name: `Ongkir (${body.shipping.courier.toUpperCase()} - ${body.shipping.service})`,
-      price: body.shipping.cost,
-      quantity: 1,
-    });
-
-    /* ================= PARAMS ================= */
-    const params = {
-      transaction_details: {
-        order_id: body.orderId,
-        gross_amount: body.total,
+  const transaction = await snap.createTransaction({
+    transaction_details: {
+      order_id: body.orderId,
+      gross_amount,
+    },
+    item_details,
+    customer_details: {
+      first_name: body.customer.name,
+      phone: body.customer.phone,
+      billing_address: {
+        address: body.customer.address,
       },
-      item_details,
-      customer_details: {
-        first_name: body.customer.name,
-        phone: body.customer.phone,
-        billing_address: {
-          address: body.customer.address,
-        },
-      },
-    };
+    },
+  } as any);
 
-    /* ================= CREATE TOKEN ================= */
-    const snapRes = await snap.createTransaction(params);
+  // ✅ SIMPAN SNAP TOKEN KE SHEET
+  await updateSnapToken(body.orderId, transaction.token);
 
-    /* ================= GOOGLE SHEET (NON BLOCKING) ================= */
-    await appendSheet("pending_orders", [
-      body.orderId,
-      new Date().toISOString(),
-
-      body.customer.name,
-      body.customer.phone,
-      body.customer.address,
-      body.customer.city ?? "-", // ✅ KOTA AMAN
-
-      JSON.stringify(body.items),
-
-      body.subtotal,
-      body.shipping.cost,
-      `${body.shipping.courier.toUpperCase()} - ${body.shipping.service}`,
-
-      body.total,
-
-      "midtrans",
-      "pending",
-
-      body.orderId,
-      snapRes.token,
-    ]);
-
-
-    /* ================= RESPONSE ================= */
-    return NextResponse.json({
-      token: snapRes.token,
-      midtrans_order_id: body.orderId,
-    });
-  } catch (err) {
-    console.error("❌ MIDTRANS TOKEN ERROR:", err);
-
-    return NextResponse.json(
-      { error: "Midtrans token error" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({
+    token: transaction.token,
+  });
 }

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -6,7 +8,7 @@ import { getProductBySlug, getProducts } from "@/lib/sheets/products";
 import { Product } from "@/types";
 import { cloudinaryImage } from "@/lib/cloudinary";
 
-export const dynamic = "force-dynamic";
+
 
 /* ===============================
    SERVER DATA

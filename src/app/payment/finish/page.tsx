@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import PaymentFinishClient from "./PaymentFinishClient";
+import PaymentFinishClient from "./payment-finish-client";
 
 export const dynamic = "force-dynamic";
 

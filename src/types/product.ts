@@ -27,6 +27,7 @@ export type ProductVariant = {
 export type Product = {
   id: string;
   name: string;
+  slug: string;
   description?: string;
 
   /** cloudinary publicId */

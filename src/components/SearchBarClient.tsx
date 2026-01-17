@@ -32,12 +32,12 @@ export default function SearchBarClient({ defaultValue = "" }: Props) {
         type="search"
         defaultValue={defaultValue}
         placeholder="Cari produk..."
-        className="w-full border rounded-lg px-4 py-2"
+        className="w-full border border-border rounded-lg px-4 py-2"
       />
 
       <button
         type="submit"
-        className="bg-black text-white px-4 rounded-lg"
+        className="bg-primary text-primary-foreground px-4 rounded-lg"
       >
         Cari
       </button>

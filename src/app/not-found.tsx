@@ -1,15 +1,12 @@
-// app/page.tsx
 export const dynamic = "force-dynamic";
 
 import { Suspense } from "react";
-import HomeClient from "@/components/HomeClient";
+import NotFoundClient from "@/components/NotFoundClient";
 
-export default function HomePage() {
+export default function NotFound() {
   return (
     <Suspense fallback={null}>
-      <HomeClient />
+      <NotFoundClient />
     </Suspense>
   );
 }
-
-
