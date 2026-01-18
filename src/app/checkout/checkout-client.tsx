@@ -131,6 +131,7 @@ export default function CheckoutClient() {
         body: JSON.stringify({
         orderId: checkoutData.orderId,
         items: checkoutData.items,
+        shipping: checkoutData.shipping, // 🔥 BARU
         customer: checkoutData.customer,
         }),
       });

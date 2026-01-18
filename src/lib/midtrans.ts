@@ -7,3 +7,9 @@ const snap = new midtransClient.Snap({
 });
 
 export default snap;
+
+// batas midtrans = 50 char
+export function truncateItemName(name: string, max = 50): string {
+  if (!name) return "Item";
+  return name.length > max ? name.slice(0, max - 1) + "…" : name;
+}
